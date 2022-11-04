@@ -1,0 +1,24 @@
+# Disable justifications:
+# -readability-identifier-length : Math symbols
+# -readability-magic-numbers: Math coeffs
+# -bugprone-easily-swappable-parameters: Temporary filter until large refactor
+# -misc-non-private-member-variables-in-classes: Waiting on refactor
+# -bugprone-narrowing-conversions: too many false positives around
+#      `std::size_t`  vs. `*::difference_type`.
+# -readability-function-cognitive-complexity: penalizes complex const
+#       initialization (w/ lambda) heavily
+Checks:
+    -*,
+    bugprone-*,
+    google-*,
+    misc-*,
+    modernize-*,
+    performance-*,
+    portability-*,
+    readability-*,
+    -readability-identifier-length,
+    -readability-magic-numbers,
+    -bugprone-easily-swappable-parameters,
+    -misc-non-private-member-variables-in-classes,
+    -bugprone-narrowing-conversions,
+    -readability-function-cognitive-complexity,
