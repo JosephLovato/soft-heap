@@ -18,39 +18,40 @@ class Tree {
       elements.emplace_back(std::move(element));
     }
 
-    constexpr IsLeaf(const Node& n) {
+    constexpr auto IsLeaf(const Node& n) -> bool {
       return (n.left == nullptr and n.right == nullptr);
     };
 
     // TODO: Unit Test sift
-    constexpr void sift() {
-      while (elements < x.size() and not IsLeaf(this)) {
+    constexpr void Sift() {
+      while (elements < size and not IsLeaf(this)) {
         if (left == nullptr or (right != nullptr and left.ckey > right.ckey)) {
           std::swap(left, right);
-          std::move(left.list.begin(), left.list.end(), list.end());
-          key = left.key;
-          left.list.clear();
+          std::move(left.elements.begin(), left.elements.end(), elements.end());
+          ckey = left.ckey;
+          left.elements.clear();
           if (IsLeaf(left)) {
             left = nullptr;
           } else {
-            sift(left);
+            Sift(left);
           }
         }
       }
     }
 
-    constexpr void sift(std::shared_ptr<Node> x) {
+    constexpr void Sift(std::shared_ptr<Node> x) {
       while (x.elements < x.size() and not IsLeaf(x)) {
         if (x.left == nullptr or
             (x.right != nullptr and x.left.ckey > x.right.ckey)) {
           std::swap(x.left, x.right);
-          std::move(x.left.list.begin(), x.left.list.end(), x.list.end());
+          std::move(x.left.elements.begin(), x.left.elements.end(),
+                    x.elements.end());
           x.key = x.left.key;
-          x.left.list.clear();
+          x.left.elements.clear();
           if (IsLeaf(x.left)) {
             x.left = nullptr;
           } else {
-            sift(x.left);
+            Sift(x.left);
           }
         }
       }
@@ -62,7 +63,7 @@ class Tree {
       right = y;
       rank = x.rank + 1;
       size = (rank > r) ? ceil((3 * x.size + 1) / 2) : 1;
-      sift();
+      Sift();
     }
 
     std::shared_ptr<Node> left;
