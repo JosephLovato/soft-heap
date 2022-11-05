@@ -28,6 +28,53 @@ class SoftHeap {
         r(ceil(log(1 / eps)) + 5) {}
   ~SoftHeap() = default;
 
+  void Meld(SoftHeap P) {
+    // TODO(Team)
+  }
+
+  // TODO(TEAM) unit test
+  void Insert(Element&& e) { Meld(SoftHeap(std::forward<Element>(e))); }
+
+  auto ExtractMin() const -> Element {
+    // TODO(TEAM)
+    return 0;
+  }
+
+  // TODO(TEAM) unit test
+  void RemoveTree(TreePtr tree) {
+    if (tree->prev == nullptr) {
+      first_tree = tree->next;
+    } else {
+      tree->prev->next = tree->next;
+    }
+    if (tree->next != nullptr) {
+      tree->next->prev = tree->prev;
+    }
+  }
+
+  // TODO(TEAM) unit test
+  void InsertTree(TreePtr tree1, TreePtr tree2) {
+    tree1->next = tree2;
+    if (tree2->prev == nullptr) {
+      first_tree = tree1;
+    } else {
+      tree2->prev->next = tree1;
+    }
+  }
+
+  // TODO(TEAM) unit test
+  void UpdateSuffixMin(TreePtr tree) const {
+    while (tree != nullptr) {
+      tree->suffix_min = (tree->root->ckey > tree->next->suffix_min->root->ckey)
+                             ? tree->next->suffix_min
+                             : tree;
+      tree = tree->prev;
+    }
+  }
+
+  // TODO(Team): MergeInto
+  // TODO(Team): RepeatedCombine
+
   TreePtr first_tree;
   TreePtr last_tree;
   int rank;
