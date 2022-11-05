@@ -21,7 +21,7 @@ class Tree {
       return (n.left == nullptr and n.right == nullptr);
     };
 
-    // TODO: Unit Test sift
+    // TODO(Joey): Unit Test sift
     constexpr void Sift(std::shared_ptr<Node> x) {
       while (x.elements < x.size() and not IsLeaf(x)) {
         if (x.left == nullptr or
@@ -72,6 +72,7 @@ class Tree {
         prev(nullptr),
         suffix_min(nullptr),
         rank(0) {}
+
   NodePtr root;        // root of node-based tree
   TreePtr next;        // right
   TreePtr prev;        // left
