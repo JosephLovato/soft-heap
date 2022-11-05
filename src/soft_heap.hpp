@@ -9,15 +9,8 @@ namespace soft_heap {
 
 // using policy::TotalOrdered;
 
-class SoftHeapError {
- public:
-  SoftHeapError() : r(epsilon + 1) {}
-  const double epsilon = 3;
-  const double r;
-};
-
 template <template <class... T> class List, policy::TotalOrdered Element>
-class SoftHeap : public SoftHeapError {
+class SoftHeap {
  private:
   using TreePtr = std::shared_ptr<Tree<List, Element>>;
   constexpr auto MakeTreePtr(Element&& element) {
