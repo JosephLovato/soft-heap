@@ -10,7 +10,7 @@ namespace soft_heap {
 template <template <class... T> class List, policy::TotalOrdered Element>
 class Tree {
  private:
-  class Node {
+  class Node : std::enable_shared_from_this<Node> {
    public:
     explicit Node(Element&& element)
         : left(nullptr), right(nullptr), rank(0), size(1), ckey(element) {
@@ -22,22 +22,6 @@ class Tree {
     };
 
     // TODO: Unit Test sift
-    constexpr void Sift() {
-      while (elements < size and not IsLeaf(this)) {
-        if (left == nullptr or (right != nullptr and left.ckey > right.ckey)) {
-          std::swap(left, right);
-          std::move(left.elements.begin(), left.elements.end(), elements.end());
-          ckey = left.ckey;
-          left.elements.clear();
-          if (IsLeaf(left)) {
-            left = nullptr;
-          } else {
-            Sift(left);
-          }
-        }
-      }
-    }
-
     constexpr void Sift(std::shared_ptr<Node> x) {
       while (x.elements < x.size() and not IsLeaf(x)) {
         if (x.left == nullptr or
@@ -62,7 +46,7 @@ class Tree {
       right = y;
       rank = x.rank + 1;
       size = (rank > r) ? ceil((3 * x.size + 1) / 2) : 1;
-      Sift();
+      Sift(std::enable_shared_from_this<Node>::shared_from_this());
     }
 
     std::shared_ptr<Node> left;
