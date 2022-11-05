@@ -4,11 +4,10 @@
 #include <memory>
 
 #include "policies.hpp"
+
 namespace soft_heap {
 
-using policy::Arithmetic;
-
-template <template <Arithmetic...> class List, Arithmetic Element>
+template <template <class... T> class List, policy::TotalOrdered Element>
 class Tree {
  private:
   class Node {

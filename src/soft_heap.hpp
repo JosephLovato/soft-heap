@@ -1,9 +1,13 @@
 #pragma once
 #include <cmath>
+#include <memory>
 
+#include "policies.hpp"
 #include "tree.hpp"
 
 namespace soft_heap {
+
+// using policy::TotalOrdered;
 
 class SoftHeapError {
  public:
@@ -12,7 +16,7 @@ class SoftHeapError {
   const double r;
 };
 
-template <template <Arithmetic...> class List, Arithmetic Element>
+template <template <class... T> class List, policy::TotalOrdered Element>
 class SoftHeap : public SoftHeapError {
  private:
   using TreePtr = std::shared_ptr<Tree<List, Element>>;

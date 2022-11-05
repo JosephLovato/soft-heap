@@ -22,7 +22,7 @@ FetchContent_MakeAvailable(googletest)
 add_executable(soft_heap src/test.cpp src/tree.hpp)
 
 target_link_libraries(soft_heap PRIVATE gtest_main)
-target_include_directories(soft_heap PRIVATE "/usr/local/include/" . "include")
+target_include_directories(soft_heap PRIVATE "/usr/local/include/" "include")
 
 # Compiler Properties
 target_compile_features(soft_heap PRIVATE cxx_std_20)
