@@ -48,9 +48,9 @@ class SoftHeap {
   explicit SoftHeap(Element&& element, double eps = 0.1)
       : impl(MakeImplPtr(std::forward<Element>(element),
                          std::forward<double>(eps))) {}
-  template <class InputIterator>
 
   // Build from STL style iterators
+  template <class InputIterator>
   SoftHeap(InputIterator first, InputIterator last, double eps = 0.1) {
     impl = MakeImplPtr(std::forward<Element>(*first, eps));
     for (auto it = std::next(first); it != last; ++it) {
