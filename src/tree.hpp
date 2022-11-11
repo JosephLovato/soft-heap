@@ -12,10 +12,10 @@ template <template <class... T> class List, policy::TotalOrdered Element>
 class Tree {
  private:
   // "Typedefs"
-  using NodePtr = std::shared_ptr<Node<List, Element>>;
+  using NodePtr = std::unique_ptr<Node<List, Element>>;
   using TreePtr = std::shared_ptr<Tree<List, Element>>;
   constexpr auto MakeNodePtr(Element&& element) {
-    return std::make_shared<Node<List, Element>>(
+    return std::make_unique<Node<List, Element>>(
         std::forward<Element>(element));
   }
 

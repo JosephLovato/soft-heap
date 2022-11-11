@@ -21,7 +21,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(soft_heap src/test.cpp src/tree.hpp)
 
-target_link_libraries(soft_heap PRIVATE gtest_main)
+target_link_libraries(soft_heap PRIVATE gtest_main gmock gtest)
 target_include_directories(soft_heap PRIVATE "/usr/local/include/" "include")
 
 # Compiler Properties
