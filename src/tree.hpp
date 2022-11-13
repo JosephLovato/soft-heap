@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <vector>
 
 #include "node.hpp"
 #include "policies.hpp"
@@ -11,9 +12,9 @@ namespace soft_heap {
 template <template <class... T> class List, policy::TotalOrdered Element>
 class Tree {
  private:
-  // "Typedefs"
   using NodePtr = std::unique_ptr<Node<List, Element>>;
   using TreePtr = std::shared_ptr<Tree<List, Element>>;
+
   constexpr auto MakeNodePtr(Element&& element) {
     return std::make_unique<Node<List, Element>>(
         std::forward<Element>(element));

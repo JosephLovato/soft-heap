@@ -36,7 +36,7 @@ class SoftHeap {
         last_tree(nullptr),
         rank(0),
         epsilon(eps),
-        r(ceil(log(1 / eps)) + 5) {}
+        r(ceil(log2(1 / eps)) + 5) {}
 
   // Build from STL style iterators
   template <class InputIterator>
