@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "src/node.hpp"
 #include "src/soft_heap.hpp"
 #include "src/tree.hpp"
 

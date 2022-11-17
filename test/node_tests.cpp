@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -92,6 +93,15 @@ TEST(Node, RecursiveCombine) {
   EXPECT_NODE_EQ(node->right, Node{9, 1, vector{5}});
   EXPECT_EQ(node->left, nullptr);
   EXPECT_EQ(y, nullptr);
+}
+
+TEST(Node, Print) {
+  auto node2 = Node<std::vector, int>(1);
+  node2.elements = {1, 2, 3, 4, 5};
+
+  auto fout = std::ofstream("node_print.txt", std::ios::out);
+  fout << node2;
+  EXPECT_EQ(1, 1);
 }
 
 // NOLINTEND(modernize-use-trailing-return-type)

@@ -19,7 +19,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 
-add_executable(soft_heap main.cpp test/node_tests.cpp test/tree_tests.cpp)
+add_executable(soft_heap main.cpp test/node_tests.cpp test/tree_tests.cpp test/soft_heap_tests.cpp)
 
 target_link_libraries(soft_heap PRIVATE gtest_main gmock gtest)
 target_include_directories(soft_heap PRIVATE "." "/usr/local/include/" "include")

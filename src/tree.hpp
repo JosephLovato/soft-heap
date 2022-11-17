@@ -1,6 +1,8 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
+#include <functional>
+#include <iomanip>
 #include <memory>
 #include <vector>
 
@@ -28,6 +30,25 @@ class Tree {
         prev(nullptr),
         suffix_min(nullptr),
         rank(0) {}
+
+  friend auto operator<<(std::ostream& out, Tree& tree) -> std::ostream& {
+    auto suff = (tree.suffix_min == nullptr)
+                    ? "nullptr"
+                    : std::to_string(tree.suffix_min->rank);
+    out << "Tree: " << tree.rank << "(rank)"
+        << "\nsuffix_min: " << suff << "\nwith Nodes:\n";
+    const std::function<void(NodePtr&)> preorder = [&](auto& n) {
+      if (n == nullptr) {
+        return;
+      }
+      out << *n << '\n';
+      preorder(n->left);
+      preorder(n->right);
+    };
+    preorder(tree.root);
+    out << std::endl;
+    return out;
+  }
 
   NodePtr root;        // root of node-based tree
   TreePtr next;        // right

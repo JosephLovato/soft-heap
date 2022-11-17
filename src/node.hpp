@@ -1,6 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <iterator>
 #include <memory>
 
@@ -53,6 +54,14 @@ class Node {
     Sift();
   }
 
+  constexpr Node(NodePtr&& x, NodePtr&& y, double r)
+      : left(std::move(x)),
+        right(std::move(y)),
+        rank(left->rank + 1),
+        size((rank > r) ? ceil(3 * left->size / 2.0) : 1) {
+    Sift();
+  }
+
   constexpr auto IsLeaf() -> bool {
     return (left == nullptr and right == nullptr);
   };
@@ -81,6 +90,20 @@ class Node {
   int size;
   List<Element> elements;
   Element ckey;  // upper bound for elements
+
+  friend auto operator<<(std::ostream& out, const Node& node) -> std::ostream& {
+    out << "Node: " << node.ckey << " (ckey), rank: " << node.rank
+        << ", size: " << node.size;
+    out << "\nwith elements: ";
+    std::copy(node.elements.begin(), node.elements.end(),
+              std::ostream_iterator<Element>(out, ", "));
+    auto left =
+        (node.left == nullptr) ? "nullptr" : std::to_string(node.left->ckey);
+    auto right =
+        (node.right == nullptr) ? "nullptr" : std::to_string(node.right->ckey);
+    out << "\nand children: " << left << ", " << right << std::endl;
+    return out;
+  }
 };
 
 }  // namespace soft_heap

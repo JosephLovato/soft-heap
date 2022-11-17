@@ -33,7 +33,7 @@ class SoftHeap {
   SoftHeap() = delete;
   explicit SoftHeap(Element element, double eps = 0.1)
       : first_tree(MakeTreePtr(std::forward<Element>(element))),
-        last_tree(nullptr),
+        last_tree(first_tree),
         rank(0),
         epsilon(eps),
         r(ceil(log2(1 / eps)) + 5) {}
@@ -49,16 +49,19 @@ class SoftHeap {
   ~SoftHeap() = default;
 
   // TODO(Team)
-  void Meld(SoftHeap&& P) {
-    if (P.rank > rank) {
-      swap(P);
+  void Meld(SoftHeap&& Q) {
+    if (rank > Q.rank) {
+      swap(Q);
     }
-    MergeInto(P);
-    RepeatedCombine(P.rank);
+    MergeInto(Q);
+    Q.RepeatedCombine(rank);
+    std::swap(first_tree, Q.first_tree);
+    std::swap(last_tree, Q.last_tree);
+    std::swap(rank, Q.rank);
   }
 
   // TODO(TEAM) unit test
-  void Insert(Element e) { Meld(SoftHeap(std::forward<Element>(e))); }
+  void Insert(Element e) { Meld(SoftHeap(std::forward<Element>(e), epsilon)); }
 
   // TODO(TEAM) unit test
   auto ExtractMin() -> Element {
@@ -78,18 +81,18 @@ class SoftHeap {
   }
 
   // TODO(Team): unit test
-  void MergeInto(SoftHeap& P) {
-    if (P.rank > rank) {
+  void MergeInto(SoftHeap& Q) {
+    if (rank > Q.rank) {
       return;
     }
-    auto tree1 = P.first_tree;
-    auto tree2 = first_tree;
+    auto tree1 = first_tree;
+    auto tree2 = Q.first_tree;
     while (tree1 != nullptr) {
       while (tree1->rank > tree2->rank) {
         tree2 = tree2->next;
       }
       auto tree1_temp = tree1->next;
-      InsertTree(tree1, tree2);
+      Q.InsertTree(tree1, tree2);
       tree1 = tree1_temp;
     }
   }
@@ -119,33 +122,57 @@ class SoftHeap {
   // TODO(TEAM) unit test
   static void UpdateSuffixMin(TreePtr& tree) {
     while (tree != nullptr) {
-      tree->suffix_min = (tree->root->ckey > tree->next->suffix_min->root->ckey)
-                             ? std::move(tree->next->suffix_min)
-                             : std::move(tree);
-      tree = std::move(tree->prev);
+      if (tree->next != nullptr) {
+        const auto tree_next_suff_min = (tree->next->suffix_min == nullptr)
+                                            ? tree->next
+                                            : tree->next->suffix_min;
+        tree->suffix_min = (tree->root->ckey > tree_next_suff_min->root->ckey)
+                               ? tree_next_suff_min
+                               : tree;
+      }
+      tree = tree->prev;
     }
   }
 
   // TODO(TEAM) unit test
-  void InsertTree(TreePtr tree1, TreePtr tree2) {
+  void InsertTree(const TreePtr& tree1, const TreePtr& tree2) {
     tree1->next = tree2;
+    // tree2->prev = tree1;
     if (tree2->prev == nullptr) {
       first_tree = tree1;
     } else {
       tree2->prev->next = tree1;
+      tree1->prev = tree2->prev;
     }
+    tree2->prev = tree1;
   }
 
   // TODO(TEAM) unit test
   void RemoveTree(TreePtr tree) {
+    auto temp = tree;
     if (tree->prev == nullptr) {
       first_tree = tree->next;
     } else {
       tree->prev->next = tree->next;
     }
-    if (tree->next != nullptr) {
-      tree->next->prev = tree->prev;
+    if (temp->next != nullptr) {
+      temp->next->prev = temp->prev;
     }
+  }
+
+  friend auto operator<<(std::ostream& out, SoftHeap& soft_heap)
+      -> std::ostream& {
+    out << "SoftHeap: " << soft_heap.rank << "(rank) with trees: \n";
+    const std::function<void(TreePtr&)> preorder = [&](auto& n) {
+      if (n == nullptr) {
+        return;
+      }
+      out << "-------------------\n" << *n << '\n';
+      preorder(n->next);
+    };
+    preorder(soft_heap.first_tree);
+    out << std::endl;
+    return out;
   }
 
   TreePtr first_tree;
