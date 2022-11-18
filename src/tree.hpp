@@ -15,7 +15,8 @@ template <template <class... T> class List, policy::TotalOrdered Element>
 class Tree {
  private:
   using NodePtr = std::unique_ptr<Node<List, Element>>;
-  using TreePtr = std::shared_ptr<Tree<List, Element>>;
+  using TreePtr = std::shared_ptr<Tree>;
+  using WeakTreePtr = std::weak_ptr<Tree>;
 
   constexpr auto MakeNodePtr(Element&& element) {
     return std::make_unique<Node<List, Element>>(
@@ -28,15 +29,16 @@ class Tree {
       : root(MakeNodePtr(std::forward<Element>(element))),
         next(nullptr),
         prev(nullptr),
-        suffix_min(nullptr),
-        rank(0) {}
+        suffix_min() {}
 
   friend auto operator<<(std::ostream& out, Tree& tree) -> std::ostream& {
-    auto suff = (tree.suffix_min == nullptr)
-                    ? "nullptr"
-                    : std::to_string(tree.suffix_min->rank);
-    out << "Tree: " << tree.rank << "(rank)"
+    const auto suff = (tree.suffix_min.expired())
+                          ? "nullptr"
+                          : std::to_string(TreePtr(tree.suffix_min)->rank());
+
+    out << "Tree: " << tree.rank() << "(rank)"
         << "\nsuffix_min: " << suff << "\nwith Nodes:\n";
+
     const std::function<void(NodePtr&)> preorder = [&](auto& n) {
       if (n == nullptr) {
         return;
@@ -50,11 +52,12 @@ class Tree {
     return out;
   }
 
-  NodePtr root;        // root of node-based tree
-  TreePtr next;        // right
-  TreePtr prev;        // left
-  TreePtr suffix_min;  // tree with minimum ckey to the right
-  int rank;
+  constexpr auto rank() noexcept -> int { return root->rank; }
+
+  NodePtr root;            // root of node-based tree
+  TreePtr next;            // right
+  TreePtr prev;            // left
+  WeakTreePtr suffix_min;  // tree with minimum ckey to the right
 };
 
 }  // namespace soft_heap

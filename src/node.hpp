@@ -1,6 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <cmath>
+#include <execution>
 #include <iostream>
 #include <iterator>
 #include <memory>
@@ -28,7 +29,8 @@ class Node {
   }
 
   explicit Node(int rank, int size, const List<Element>& elements,
-                const NodePtr& left = nullptr, const NodePtr& right = nullptr)
+                const NodePtr& left = nullptr,
+                const NodePtr& right = nullptr) noexcept
       : left(left),
         right(right),
         rank(rank),
@@ -37,7 +39,7 @@ class Node {
         elements(elements) {}
 
   explicit Node(int rank, int size, List<Element>&& elements,
-                NodePtr&& left = nullptr, NodePtr&& right = nullptr)
+                NodePtr&& left = nullptr, NodePtr&& right = nullptr) noexcept
       : left(std::move(left)),
         right(std::move(right)),
         rank(rank),
@@ -46,7 +48,7 @@ class Node {
         ckey(*std::max_element(this->elements.begin(), this->elements.end())) {}
 
   // r passed in from repeat_combine() from SoftHeap
-  constexpr Node(NodePtr& x, NodePtr& y, double r)
+  constexpr Node(NodePtr& x, NodePtr& y, double r) noexcept
       : left(std::move(x)),
         right(std::move(y)),
         rank(left->rank + 1),
@@ -54,7 +56,7 @@ class Node {
     Sift();
   }
 
-  constexpr Node(NodePtr&& x, NodePtr&& y, double r)
+  constexpr Node(NodePtr&& x, NodePtr&& y, double r) noexcept
       : left(std::move(x)),
         right(std::move(y)),
         rank(left->rank + 1),
@@ -62,15 +64,15 @@ class Node {
     Sift();
   }
 
-  constexpr auto IsLeaf() -> bool {
+  constexpr auto IsLeaf() noexcept -> bool {
     return (left == nullptr and right == nullptr);
   };
 
   // TODO(Joey): Unit Test sift
-  constexpr void Sift() {
+  constexpr void Sift() noexcept {
     while (elements.size() < size and not IsLeaf()) {
       if (left == nullptr or (right != nullptr and left->ckey > right->ckey)) {
-        std::swap(left, right);
+        left.swap(right);
       }
       std::move(left->elements.begin(), left->elements.end(),
                 std::back_inserter(elements));
@@ -84,14 +86,8 @@ class Node {
     }
   }
 
-  NodePtr left;
-  NodePtr right;
-  int rank;
-  int size;
-  List<Element> elements;
-  Element ckey;  // upper bound for elements
-
-  friend auto operator<<(std::ostream& out, const Node& node) -> std::ostream& {
+  friend auto operator<<(std::ostream& out, const Node& node) noexcept
+      -> std::ostream& {
     out << "Node: " << node.ckey << " (ckey), rank: " << node.rank
         << ", size: " << node.size;
     out << "\nwith elements: ";
@@ -104,6 +100,13 @@ class Node {
     out << "\nand children: " << left << ", " << right << std::endl;
     return out;
   }
+
+  NodePtr left;
+  NodePtr right;
+  int rank;
+  int size;
+  List<Element> elements;
+  Element ckey;  // upper bound for elements
 };
 
 }  // namespace soft_heap
