@@ -6,9 +6,9 @@
 #include <cmath>
 #include <memory>
 
+#include "node.hpp"
 #include "policies.hpp"
-#include "src/node.hpp"
-#include "src/tree.hpp"
+#include "tree.hpp"
 
 namespace soft_heap::test {
 

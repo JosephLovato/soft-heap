@@ -5,11 +5,30 @@
 #include <iostream>
 #include <iterator>
 #include <memory>
+#include <numeric>
 
 #include "policies.hpp"
 
-namespace soft_heap {
+// OUTLINE
+// template <template <class... T> class List, std::totally_ordered Element>
+// class Node {
+//  private:
+//   using NodePtr = std::unique_ptr<Node>;
 
+//  public:
+//   constexpr explicit Node(const Element&) noexcept;
+//   constexpr Node(NodePtr&& x, NodePtr&& y, double r) noexcept;
+//   constexpr void Sift() noexcept;
+
+//   NodePtr left;
+//   NodePtr right;
+//   int rank;
+//   int size;
+//   List<Element> elements;
+//   Element ckey;
+// };
+
+namespace soft_heap {
 template <template <class... T> class List, policy::TotalOrdered Element>
 class Node {
  private:
@@ -18,19 +37,19 @@ class Node {
  public:
   Node() = default;
 
-  explicit Node(Element&& element)
+  constexpr explicit Node(Element&& element) noexcept
       : left(nullptr), right(nullptr), rank(0), size(1), ckey(element) {
     elements.emplace_back(std::move(element));
   }
 
-  explicit Node(const Element& element)
+  constexpr explicit Node(const Element& element) noexcept
       : left(nullptr), right(nullptr), rank(0), size(1), ckey(element) {
     elements.emplace_back(element);
   }
 
-  explicit Node(int rank, int size, const List<Element>& elements,
-                const NodePtr& left = nullptr,
-                const NodePtr& right = nullptr) noexcept
+  constexpr Node(int rank, int size, const List<Element>& elements,
+                 const NodePtr& left = nullptr,
+                 const NodePtr& right = nullptr) noexcept
       : left(left),
         right(right),
         rank(rank),
@@ -38,8 +57,8 @@ class Node {
         ckey(std::max(elements)),
         elements(elements) {}
 
-  explicit Node(int rank, int size, List<Element>&& elements,
-                NodePtr&& left = nullptr, NodePtr&& right = nullptr) noexcept
+  constexpr Node(int rank, int size, List<Element>&& elements,
+                 NodePtr&& left = nullptr, NodePtr&& right = nullptr) noexcept
       : left(std::move(left)),
         right(std::move(right)),
         rank(rank),
@@ -64,7 +83,7 @@ class Node {
     Sift();
   }
 
-  constexpr auto IsLeaf() noexcept -> bool {
+  [[nodiscard]] constexpr auto IsLeaf() const noexcept -> bool {
     return (left == nullptr and right == nullptr);
   };
 
@@ -99,6 +118,11 @@ class Node {
         (node.right == nullptr) ? "nullptr" : std::to_string(node.right->ckey);
     out << "\nand children: " << left << ", " << right << std::endl;
     return out;
+  }
+
+  constexpr auto num_corrupted_keys() noexcept {
+    return std::count_if(elements.begin(), elements.end(),
+                         [&](auto&& x) { return x < ckey; });
   }
 
   NodePtr left;

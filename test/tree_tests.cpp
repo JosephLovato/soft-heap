@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "common.hpp"
-#include "src/soft_heap.hpp"
-#include "src/tree.hpp"
+#include "soft_heap.hpp"
+#include "tree.hpp"
 
 namespace soft_heap::test {
 

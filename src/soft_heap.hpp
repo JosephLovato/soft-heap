@@ -9,6 +9,34 @@
 
 namespace soft_heap {
 
+// OUTLINE
+// template <template <class... T> class List, std::totally_ordered Element>
+// class SoftHeap {
+//  private:
+//   using TreePtr = std::shared_ptr<Tree<List, Element>>;
+//   using NodePtr = std::unique_ptr<Node<List, Element>>;
+
+//   constexpr void MergeInto(SoftHeap&&) noexcept;
+//   constexpr void RepeatedCombine(int) noexcept;
+//   constexpr static void UpdateSuffixMin(TreePtr) noexcept;
+//   constexpr void InsertTree(TreePtr, TreePtr) noexcept;
+//   constexpr void RemoveTree(TreePtr) noexcept;
+//   constexpr auto rank() const noexcept -> int;
+//   template <class InputIterator>
+//   constexpr SoftHeap(InputIterator, InputIterator, double);
+
+//  public:
+//   constexpr explicit SoftHeap(Element, double) noexcept;
+//   constexpr void Meld(SoftHeap&& P) noexcept;
+//   constexpr void Insert(Element e) noexcept;
+//   constexpr auto ExtractMin() noexcept -> Element;
+
+//   TreePtr first_tree;
+//   TreePtr last_tree;
+//   const double epsilon;
+//   const double r;
+// };
+
 template <template <class... T> class List, policy::TotalOrdered Element>
 class SoftHeap {
  private:
@@ -27,63 +55,13 @@ class SoftHeap {
                                                  std::forward<double>(r));
   }
 
-  constexpr void swap(SoftHeap& P) noexcept {
+  constexpr void swap(SoftHeap&& P) noexcept {
     first_tree.swap(P.first_tree);
     last_tree.swap(P.last_tree);
   }
 
- public:
-  SoftHeap() = delete;
-
-  constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
-      : first_tree(MakeTreePtr(std::forward<Element>(element))),
-        last_tree(first_tree),
-        epsilon(eps),
-        r(ceil(log2(1 / eps)) + 5) {}
-
-  // Build from STL style iterators
-  template <class InputIterator>
-  SoftHeap(InputIterator first, InputIterator last, double eps = 0.1) noexcept
-      : SoftHeap(*first, eps) {
-    std::for_each(std::next(first), last, [&](auto&& e) { Insert(e); });
-  }
-  ~SoftHeap() = default;
-
-  constexpr void Meld(SoftHeap&& P) noexcept {
-    if (P.rank() > rank()) {
-      swap(P);  // Just use P.Meld(Q) ?
-    }
-    MergeInto(std::forward<SoftHeap>(P));
-    RepeatedCombine(P.rank());
-  }
-
-  // TODO(TEAM) unit test
-  void Insert(Element e) { Meld(SoftHeap(std::forward<Element>(e), epsilon)); }
-
-  // TODO(TEAM) unit test
-  auto ExtractMin() -> Element {
-    assert(first_tree != nullptr);
-    auto tree = (first_tree->suffix_min.expired())
-                    ? first_tree
-                    : std::shared_ptr(first_tree->suffix_min);
-    assert(not tree->root->elements.empty());
-    const auto e = tree->root->elements.back();
-    tree->root->elements.pop_back();
-    if (tree->root->elements.size() <= tree->root->size / 2) {
-      if (not tree->root->IsLeaf()) {
-        tree->root->Sift();
-        UpdateSuffixMin(tree);
-      } else if (tree->root->elements.empty()) {
-        RemoveTree(tree);
-        UpdateSuffixMin(last_tree);  // maybe a faster way
-      }
-    }
-
-    return e;
-  }
-
   // TODO(Team): unit test
-  void MergeInto(SoftHeap&& P) {
+  constexpr void MergeInto(SoftHeap&& P) noexcept {
     if (P.rank() > rank()) {
       return;
     }
@@ -100,7 +78,7 @@ class SoftHeap {
   }
 
   // TODO(Team): unit test
-  void RepeatedCombine(int k) {
+  constexpr void RepeatedCombine(int k) noexcept {
     auto tree = first_tree;
     while (tree != nullptr and tree->next != nullptr) {
       if (tree->rank() == tree->next->rank()) {
@@ -124,12 +102,13 @@ class SoftHeap {
   }
 
   // TODO(TEAM) unit test
-  static void UpdateSuffixMin(TreePtr tree) noexcept {
+  constexpr static void UpdateSuffixMin(TreePtr tree) noexcept {
     while (tree != nullptr) {
       if (tree->next != nullptr) {
-        auto tree_next_suff_min = (tree->next->suffix_min.expired())
-                                      ? tree->next
-                                      : std::shared_ptr(tree->next->suffix_min);
+        const auto tree_next_suff_min =
+            (tree->next->suffix_min.expired())
+                ? tree->next
+                : std::shared_ptr(tree->next->suffix_min);
         tree->suffix_min = (tree->root->ckey > tree_next_suff_min->root->ckey)
                                ? tree_next_suff_min
                                : tree;
@@ -159,10 +138,67 @@ class SoftHeap {
     }
     if (tree->next != nullptr) {
       tree->next->prev = tree->prev;
+      return;
     }
+    last_tree = tree->prev;
   }
 
-  constexpr auto rank() noexcept -> int { return last_tree->rank(); }
+  [[nodiscard]] constexpr auto rank() const noexcept -> int {
+    return last_tree->rank();
+  }
+
+ public:
+  SoftHeap() = delete;
+
+  constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
+      : first_tree(MakeTreePtr(std::forward<Element>(element))),
+        last_tree(first_tree),
+        epsilon(eps),
+        r(ceil(log2(1 / eps)) + 5) {}
+
+  // Build from STL style iterators
+  template <class InputIterator>
+  constexpr SoftHeap(InputIterator first, InputIterator last,
+                     double eps = 0.1) noexcept
+      : SoftHeap(*first, eps) {
+    std::for_each(std::next(first), last, [&](auto&& e) { Insert(e); });
+  }
+  ~SoftHeap() = default;
+
+  constexpr void Meld(SoftHeap&& P) noexcept {
+    if (P.rank() > rank()) {
+      swap(std::forward<SoftHeap>(P));
+    }
+    MergeInto(std::forward<SoftHeap>(P));
+    RepeatedCombine(P.rank());
+  }
+
+  // TODO(TEAM) unit test
+  constexpr void Insert(Element e) noexcept {
+    Meld(SoftHeap(std::forward<Element>(e), epsilon));
+  }
+
+  // TODO(TEAM) unit test
+  [[nodiscard]] constexpr auto ExtractMin() noexcept -> Element {
+    assert(first_tree != nullptr);
+    const auto tree = (first_tree->suffix_min.expired())
+                          ? first_tree
+                          : std::shared_ptr(first_tree->suffix_min);
+    assert(not tree->root->elements.empty());
+    const auto e = tree->root->elements.back();
+    tree->root->elements.pop_back();
+    if (tree->root->elements.size() <= tree->root->size / 2) {
+      if (not tree->root->IsLeaf()) {
+        tree->root->Sift();
+        UpdateSuffixMin(tree);
+      } else if (tree->root->elements.empty()) {
+        RemoveTree(tree);
+        UpdateSuffixMin(last_tree);  // maybe a faster way
+      }
+    }
+
+    return e;
+  }
 
   friend auto operator<<(std::ostream& out, SoftHeap& soft_heap) noexcept
       -> std::ostream& {
@@ -177,6 +213,16 @@ class SoftHeap {
     preorder(soft_heap.first_tree);
     out << std::endl;
     return out;
+  }
+
+  [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
+    int num = 0;
+    auto tree = first_tree;
+    while (tree != nullptr) {
+      num += tree->num_corrupted_keys();
+      tree = tree->next;
+    }
+    return num;
   }
 
   TreePtr first_tree;

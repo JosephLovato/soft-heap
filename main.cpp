@@ -4,11 +4,14 @@
 #include <algorithm>
 #include <iostream>
 #include <memory>
+#include <queue>
+#include <random>
+#include <string>
 #include <vector>
 
-#include "src/node.hpp"
-#include "src/soft_heap.hpp"
-#include "src/tree.hpp"
+#include "node.hpp"
+#include "soft_heap.hpp"
+#include "tree.hpp"
 
 namespace soft_heap {
 
