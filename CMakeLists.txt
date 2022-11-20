@@ -20,21 +20,24 @@ FetchContent_Declare(googlebenchmark
 
 FetchContent_MakeAvailable(googletest googlebenchmark)
 
-# add_executable(soft_heap main.cpp test/node_tests.cpp test/tree_tests.cpp test/soft_heap_tests.cpp)
-# target_link_libraries(soft_heap PRIVATE gtest_main gmock gtest)
-# target_include_directories(soft_heap PRIVATE "include" "src")
+# Unit Testing Executable
+add_executable(soft_heap_test main.cpp test/node_tests.cpp test/tree_tests.cpp test/soft_heap_tests.cpp)
+target_link_libraries(soft_heap_test PRIVATE gtest_main gmock gtest)
+target_include_directories(soft_heap_test PRIVATE "include" "src")
 
-add_executable(soft_heap benchmark.cpp)
-target_link_libraries(soft_heap PRIVATE benchmark::benchmark benchmark::benchmark_main)
-target_include_directories(soft_heap PRIVATE "include" "src")
+# Compiler Properties for Unit Testing
+target_compile_features(soft_heap_test PRIVATE cxx_std_20)
+target_compile_options(soft_heap_test PRIVATE -O3 -Wall -Werror)
 
-# Compiler Properties
-target_compile_features(soft_heap PRIVATE cxx_std_20)
-target_compile_options(soft_heap PRIVATE -O3 -Wall)
+# Benchmark Executable
+add_executable(soft_heap_bench benchmark.cpp)
+target_link_libraries(soft_heap_bench PRIVATE benchmark::benchmark benchmark::benchmark_main)
+target_include_directories(soft_heap_bench PRIVATE "include" "src")
+set_property(TARGET soft_heap_bench PROPERTY CMAKE_BUILD_TYPE Release)
 
-# Compiler Properties
-# target_compile_features(soft_heap_bench PRIVATE cxx_std_20)
-# target_compile_options(soft_heap_bench PRIVATE -g -Wall)
+# Compiler Properties for Benchmarking
+target_compile_features(soft_heap_bench PRIVATE cxx_std_20)
+target_compile_options(soft_heap_bench PRIVATE -O3 -Wall)
 
 # Pass to clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
