@@ -44,6 +44,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(BENCHMARK_FORMAT json)
 # set(BENCHMARK_OUT "../bench.json")
 
-# gtest_discover_tests(soft_heap)
+gtest_discover_tests(soft_heap_test)
 
-# enable_testing()
+enable_testing()
