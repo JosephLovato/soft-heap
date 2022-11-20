@@ -27,7 +27,7 @@ target_include_directories(soft_heap_test PRIVATE "include" "src")
 
 # Compiler Properties for Unit Testing
 target_compile_features(soft_heap_test PRIVATE cxx_std_20)
-target_compile_options(soft_heap_test PRIVATE -O3 -Wall -Werror)
+target_compile_options(soft_heap_test PRIVATE -O3 -Wall)
 
 # Benchmark Executable
 add_executable(soft_heap_bench benchmark.cpp)
