@@ -32,8 +32,8 @@ static void SoftHeapConstruct(benchmark::State& state) {
     // state.PauseTiming();
     const auto rand = bench::generate_rand(state.range(0));
     // state.ResumeTiming();
-    benchmark::DoNotOptimize(SoftHeap<std::vector, int>(
-        rand.begin(), rand.end(), 1.0 / state.range(1)));
+    benchmark::DoNotOptimize(
+        SoftHeap<int>(rand.begin(), rand.end(), 1.0 / state.range(1)));
     benchmark::ClobberMemory();
   }
   state.SetComplexityN(state.range(0));
@@ -55,9 +55,9 @@ static void SoftHeapInsert(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     const auto rand = bench::generate_rand(state.range(0));
-    auto soft_heap = SoftHeap<std::vector, int>(
-        rand.begin(), std::next(rand.begin(), state.range(0)),
-        1.0 / state.range(1));
+    auto soft_heap =
+        SoftHeap<int>(rand.begin(), std::next(rand.begin(), state.range(0)),
+                      1.0 / state.range(1));
     state.ResumeTiming();
     soft_heap.Insert(bench::generate_rand(1)[0]);
   }
@@ -80,11 +80,13 @@ static void SoftHeapExtract(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     const auto rand = bench::generate_rand(state.range(0));
-    auto soft_heap = SoftHeap<std::vector, int>(rand.begin(), rand.end(),
-                                                1.0 / state.range(1));
+    auto soft_heap =
+        SoftHeap<int>(rand.begin(), rand.end(), 1.0 / state.range(1));
     state.ResumeTiming();
-    benchmark::DoNotOptimize(soft_heap.ExtractMin());
-    benchmark::ClobberMemory();
+    for ([[maybe_unused]] auto&& x : rand) {
+      benchmark::DoNotOptimize(soft_heap.ExtractMin());
+      benchmark::ClobberMemory();
+    }
   }
   state.SetComplexityN(state.range(0));
 }
@@ -97,9 +99,11 @@ static void STLHeapExtract(benchmark::State& state) {
         std::priority_queue<int, std::deque<int>>(rand.begin(), rand.end());
     state.ResumeTiming();
     // for (int i = 0; i < state.range(0); ++i) {
-    benchmark::DoNotOptimize(min_queue.top());
-    min_queue.pop();
-    benchmark::ClobberMemory();
+    for ([[maybe_unused]] auto&& x : rand) {
+      benchmark::DoNotOptimize(min_queue.top());
+      min_queue.pop();
+      benchmark::ClobberMemory();
+    }
     // }
   }
   state.SetComplexityN(state.range(0));
@@ -129,12 +133,12 @@ static void VectorSortExtract(benchmark::State& state) {
 //     ->ArgsProduct({{1, 8, 64, 128, 512, 1024, 2048}, {1, 10000}});
 BENCHMARK(SoftHeapExtract)
     // ->ArgsProduct({{2 << 16}, {1, 1000}})
-    ->ArgsProduct({{8, 1024, 2048}, {1000}});
+    ->ArgsProduct({{1, 8, 64, 128, 512, 1024}, {32, 8, 4, 2}});
 // ->ArgsProduct({{1, 8, 64, 128, 512, 1024, 2048}, {1, 1000}});
 // BENCHMARK(STLHeapInsert)->ArgsProduct({{1, 8, 64, 128, 512, 1024, 2048}});
 BENCHMARK(STLHeapExtract)
     // ->ArgsProduct({{2 << 16}})
-    ->ArgsProduct({{8, 1024, 2048}});
+    ->ArgsProduct({{1, 8, 64, 128, 512, 1024}});
 
 // BENCHMARK(VectorSortExtract)
 //     ->ArgsProduct({{2 << 16}});
