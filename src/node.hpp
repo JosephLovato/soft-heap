@@ -21,19 +21,19 @@ class Node {
   Node() = delete;
 
   constexpr explicit Node(Element&& element) noexcept
-      : left(nullptr),
-        right(nullptr),
-        elements(List{std::forward<Element>(element)}),
+      : elements(List{std::forward<Element>(element)}),
         ckey(std::forward<Element>(element)),
         rank(0),
-        size(1) {}
+        size(1),
+        left(nullptr),
+        right(nullptr) {}
 
   constexpr explicit Node(NodePtr&& node1, NodePtr&& node2,
                           int struct_param) noexcept
-      : left(std::forward<NodePtr>(node1)),
-        right(std::forward<NodePtr>(node2)),
-        rank(left->rank + 1),
-        size((rank > struct_param) ? left->size + 1 : 1) {
+      : rank(node1->rank + 1),
+        size((rank > struct_param) ? node1->size + 1 : 1),
+        left(std::forward<NodePtr>(node1)),
+        right(std::forward<NodePtr>(node2)) {
     Sift();
   }
 
