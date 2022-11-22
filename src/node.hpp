@@ -92,8 +92,6 @@ class Node {
   Element ckey;
   const int rank;
   const int size;
-
- private:
   NodePtr left;
   NodePtr right;
 };
