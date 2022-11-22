@@ -64,7 +64,7 @@ class SoftHeap {
     const auto& x = min_tree->root;
     const auto first_elem = x->back();
     x->pop_back();
-    if (2 * x->elements.size() < x->size) {
+    if (2 * std::ssize(x->elements) < x->size) {
       if (not x->IsLeaf()) {
         x->Sift();
         UpdateSuffixMin(min_tree);

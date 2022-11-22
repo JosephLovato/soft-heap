@@ -42,7 +42,7 @@ class Node {
   };
 
   constexpr void Sift() noexcept {
-    while (elements.size() < size and not IsLeaf()) {
+    while (std::ssize(elements) < size and not IsLeaf()) {
       auto& min_child = left == nullptr    ? right
                         : right == nullptr ? left
                         : left > right     ? right
