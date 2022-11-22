@@ -94,9 +94,6 @@ class SoftHeap {
   TreeList trees;
 
  private:
-  double epsilon;
-  int struct_param;
-
   [[nodiscard]] constexpr auto MakeNodePtr(NodePtr&& x, NodePtr&& y) noexcept {
     return std::make_unique<Node<Element, List>>(
         std::forward<NodePtr>(x), std::forward<NodePtr>(y), struct_param);
@@ -122,6 +119,9 @@ class SoftHeap {
                          : std::next(it)->min_ckey;
     }
   }
+
+  double epsilon;
+  int struct_param;
 };
 
 }  // namespace soft_heap
