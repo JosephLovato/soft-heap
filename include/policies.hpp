@@ -10,9 +10,8 @@ template <class T>
 concept TotalOrdered = requires(T param) { requires std::totally_ordered<T>; };
 
 template <class ContainerType>
-concept TotalOrderedContainer =
+concept Container =
     requires(ContainerType a, const ContainerType b) {
-      requires std::totally_ordered<ContainerType>;
       requires std::regular<ContainerType>;
       requires std::swappable<ContainerType>;
       requires std::destructible<typename ContainerType::value_type>;
@@ -39,7 +38,15 @@ concept TotalOrderedContainer =
       { a.cend() } -> std::same_as<typename ContainerType::const_iterator>;
       { a.size() } -> std::same_as<typename ContainerType::size_type>;
       { a.max_size() } -> std::same_as<typename ContainerType::size_type>;
-      { a.empty() } -> std::same_as<bool>;
+    };
+static_assert(Container<std::vector<int>>);
+static_assert(Container<std::string>);
+
+template <class ContainerType>
+concept TotalOrderedContainer =
+    requires(ContainerType a, const ContainerType b) {
+      requires Container<ContainerType>;
+      requires std::totally_ordered<ContainerType>;
       { a.back() } -> std::totally_ordered;
     };
 static_assert(TotalOrderedContainer<std::vector<int>>);
