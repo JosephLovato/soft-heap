@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 
 #include <fstream>
+#include <functional>
+#include <queue>
 #include <random>
 #include <vector>
 
@@ -10,6 +12,7 @@
 namespace soft_heap::test {
 
 namespace detail {
+
 [[nodiscard]] auto generate_rand(int n) noexcept {
   auto v = std::vector<int>(n);
   std::iota(v.begin(), v.end(), 1);  // 1,2,...,size-1
@@ -18,6 +21,7 @@ namespace detail {
 }
 
 }  // namespace detail
+   //
 // NOLINTBEGIN(modernize-use-trailing-return-type)
 
 TEST(SoftHeap, Construct) { SoftHeap<int> soft_heap{0}; }
@@ -39,6 +43,19 @@ TEST(SoftHeap, Extract) {
     fout << soft_heap.ExtractMin() << ',';
   }
   fout << std::endl;
+}
+
+TEST(SoftHeap, ExtractMin) {
+  const auto rand = detail::generate_rand(3000);
+  auto soft_heap = SoftHeap<int>(rand.begin(), rand.end(), 0.99);
+  auto stl_heap =
+      std::priority_queue(rand.begin(), rand.end(), std::greater<>());
+  while (not stl_heap.empty()) {
+    const auto sh_elem = soft_heap.ExtractMin();
+    const auto stl_elem = stl_heap.top();
+    stl_heap.pop();
+    EXPECT_EQ(sh_elem, stl_elem);
+  }
 }
 
 // NOLINTEND(modernize-use-trailing-return-type)
@@ -79,19 +96,6 @@ TEST(SoftHeap, Extract) {
 // }  // namespace detail
 
 // // NOLINTBEGIN(modernize-use-trailing-return-type)
-
-// // TEST(SoftHeap, ExtractMin) {
-// //   const auto rand = detail::generate_rand(3000);
-// //   auto soft_heap = SoftHeap<std::vector, int>(rand.begin(), rand.end(),
-// //   0.11); auto stl_heap = std::priority_queue<int>(rand.begin(),
-// rand.end());
-// //   while (not stl_heap.empty()) {
-// //     const auto sh_elem = soft_heap.ExtractMin();
-// //     const auto stl_elem = stl_heap.top();
-// //     stl_heap.pop();
-// //     EXPECT_TRUE(sh_elem == stl_elem)
-// //   }
-// // }
 
 // TEST(SoftHeap, SimpleSortedness) {
 //   auto fout = std::ofstream("soft_heap_invarience.txt");

@@ -1,9 +1,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <list>
 #include <memory>
 #include <vector>
 
+#include "common.hpp"
 #include "tree.hpp"
 
 namespace soft_heap::test {
@@ -11,6 +13,14 @@ namespace soft_heap::test {
 // NOLINTBEGIN(modernize-use-trailing-return-type)
 
 TEST(Tree, Construct) { Tree<int> tree{0}; }
+
+TEST(Tree, Constructor) {
+  auto tree = std::make_unique<Tree<int>>(3);
+  EXPECT_EQ(tree->rank(), 0);
+  // EXPECT_EQ(tree->min_ckey, nullptr);
+  // EXPECT_TRE(tree->suffix_min, nullptr);
+  EXPECT_NODE_EQ(tree->root, Node<int>{0, 1, std::list{3}});
+}
 
 // TEST(Tree, UpdateSuffixMin) {
 //   Tree<int> tree{0};

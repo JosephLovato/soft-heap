@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cmath>
 #include <compare>
 #include <iostream>
@@ -28,12 +29,22 @@ class Node {
         left(nullptr),
         right(nullptr) {}
 
+  constexpr explicit Node(int rank, int size, List&& list) noexcept
+      : elements(std::move(list)),
+        ckey(*std::max_element(elements.begin(), elements.end())),
+        rank(rank),
+        size(size),
+        left(nullptr),
+        right(nullptr) {}
+
   constexpr explicit Node(NodePtr&& node1, NodePtr&& node2,
                           int struct_param) noexcept
-      : rank(node1->rank + 1),
-        size((rank > struct_param) ? node1->size + 1 : 1),
-        left(std::forward<NodePtr>(node1)),
-        right(std::forward<NodePtr>(node2)) {
+      : rank((node1 == nullptr) ? node2->rank + 1 : node1->rank + 1),
+        size((rank > struct_param)
+                 ? (node1 == nullptr) ? node2->size + 1 : node1->size + 1
+                 : 1),
+        left(std::move(node1)),
+        right(std::move(node2)) {
     Sift();
   }
 
@@ -45,11 +56,11 @@ class Node {
     while (std::ssize(elements) < size and not IsLeaf()) {
       auto& min_child = left == nullptr    ? right
                         : right == nullptr ? left
-                        : left > right     ? right
-                                           : left;  // see <==> overload
-      elements.splice(elements.end(), min_child->elements);
-      // std::move(min_child->elements.begin(), min_child->elements.end(),
-      //           std::back_inserter(elements));
+                        : *left > *right   ? right
+                                           : left;
+      // elements.splice(elements.end(), min_child->elements);
+      std::move(min_child->elements.begin(), min_child->elements.end(),
+                std::back_inserter(elements));
       ckey = min_child->ckey;
       if (min_child->IsLeaf()) {
         min_child = nullptr;  // deallocated child
