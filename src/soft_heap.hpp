@@ -1,9 +1,14 @@
 #pragma once
+#include <__iterator/concepts.h>
+
+#include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <list>
 #include <memory>
+#include <set>
 #include <type_traits>
 
 #include "policies.hpp"
@@ -17,19 +22,33 @@ template <policy::TotalOrdered Element,
 class SoftHeap {
  public:
   using NodePtr = std::unique_ptr<Node<Element, List>>;
+  // using TreeList = std::set<Tree<Element, List>>;
   using TreeList = std::list<Tree<Element, List>>;
   using TreeListIt = typename TreeList::iterator;
 
-  constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
+  // constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
+  //     : epsilon(eps), struct_param(ConstCeil(std::log2(1.0 / eps)) + 5) {
+  //   trees.emplace_back(std::forward<Element>(element));
+  //   trees.front().min_ckey = trees.begin();
+  // }
+
+  // constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
+  //     : epsilon(eps), struct_param(ConstCeil(std::log2(1.0 / eps)) + 5) {
+  //   trees.emplace_back(std::forward<Element>(element));
+  //   trees.begin()->min_ckey = trees.begin();
+  // }
+
+  constexpr explicit SoftHeap(Element&& element, double eps = 0.1) noexcept
       : epsilon(eps), struct_param(ConstCeil(std::log2(1.0 / eps)) + 5) {
     trees.emplace_back(std::forward<Element>(element));
-    trees.front().min_ckey = trees.begin();
+    trees.begin()->min_ckey = trees.begin();
   }
 
   constexpr SoftHeap(std::input_iterator auto first,
                      std::input_iterator auto last, double eps = 0.1) noexcept
-      : SoftHeap(*first, eps) {
-    std::for_each(std::next(first), last, [&](auto&& e) { Insert(e); });
+      : SoftHeap(std::move(*first), eps) {
+    std::for_each(std::next(first), last,
+                  [&](auto&& e) { Insert(std::forward<Element>(e)); });
   }
 
   constexpr void Insert(Element e) noexcept {
@@ -41,17 +60,16 @@ class SoftHeap {
       trees.swap(P.trees);
     }
     const auto p_rank = P.rank();
-    trees.merge(P.trees,
-                [](auto&& a, auto&& b) { return a.rank() <= b.rank(); });
-    auto temp = trees.begin();
-    for (auto tree = std::next(trees.begin()); tree != trees.end();
+    trees.merge(P.trees);
+
+    for (auto tree = trees.begin(); tree != trees.end();
          std::advance(tree, 1)) {
-      if (tree->rank() == temp->rank()) {
-        tree->root = MakeNodePtr(std::forward<NodePtr>(tree->root),
-                                 std::forward<NodePtr>(temp->root));
-        trees.erase(temp);
+      if (std::next(tree) != trees.end() and
+          tree->rank() == std::next(tree)->rank()) {
+        tree->root = MakeNodePtr(std::move(tree->root),
+                                 std::move(std::next(tree)->root));
+        trees.erase(std::next(tree));
       }
-      std::advance(temp, 1);
       if (tree->rank() >= p_rank) {
         UpdateSuffixMin(tree);
         return;
@@ -120,8 +138,8 @@ class SoftHeap {
     }
   }
 
-  double epsilon;
-  int struct_param;
+  const double epsilon;
+  const int struct_param;
 };
 
 }  // namespace soft_heap

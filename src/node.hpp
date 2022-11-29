@@ -3,6 +3,7 @@
 #include <cmath>
 #include <compare>
 #include <iostream>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <type_traits>
@@ -54,18 +55,22 @@ class Node {
 
   constexpr void Sift() noexcept {
     while (std::ssize(elements) < size and not IsLeaf()) {
-      auto& min_child = left == nullptr    ? right
-                        : right == nullptr ? left
-                        : *left > *right   ? right
-                                           : left;
-      // elements.splice(elements.end(), min_child->elements);
-      std::move(min_child->elements.begin(), min_child->elements.end(),
-                std::back_inserter(elements));
-      ckey = min_child->ckey;
-      if (min_child->IsLeaf()) {
-        min_child = nullptr;  // deallocated child
+      if (left == nullptr or (right != nullptr and *left > *right)) {
+        std::swap(left, right);
+      }
+      elements.splice(elements.end(), std::move(left->elements));
+      // elements.insert(elements.end(),
+      //                 std::make_move_iterator(min_child->elements.begin()),
+      //                 std::make_move_iterator(min_child->elements.end()));
+      // std::move(min_child->elements.begin(), min_child->elements.end(),
+      //           std::back_inserter(elements));
+      // std::move(min_child->elements.begin(), min_child->elements.end(),
+      //           elements.end());
+      ckey = left->ckey;
+      if (left->IsLeaf()) {
+        left = nullptr;  // deallocated child
       } else {
-        min_child->Sift();
+        left->Sift();
       }
     }
   }

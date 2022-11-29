@@ -1,7 +1,9 @@
 #pragma once
+#include <functional>
 #include <iostream>
 #include <list>
 #include <memory>
+#include <set>
 #include <type_traits>
 
 #include "node.hpp"
@@ -14,10 +16,11 @@ template <policy::TotalOrdered Element,
 class Tree {
  public:
   using NodePtr = std::unique_ptr<Node<Element, List>>;
+  // using TreeList = std::set<Tree<Element, List>>;
   using TreeList = std::list<Tree<Element, List>>;
   using TreeListIt = typename TreeList::iterator;
 
-  [[nodiscard]] constexpr auto MakeNodePtr(Element&& elem) noexcept {
+  [[nodiscard]] constexpr auto MakeNodePtr(Element&& elem) const noexcept {
     return std::make_unique<Node<Element, List>>(std::forward<Element>(elem));
   }
 
@@ -26,19 +29,32 @@ class Tree {
 
   [[nodiscard]] constexpr auto rank() const noexcept { return root->rank; }
 
+  constexpr auto operator<=>(const Tree& that) const noexcept
+      -> std::strong_ordering {
+    return this->rank() <=> that.rank();
+  }
+
+  constexpr auto operator<=>(Tree&& that) const noexcept
+      -> std::strong_ordering {
+    return this->rank() <=> that.rank();
+  }
+  constexpr auto operator<=>(int that) const noexcept -> std::strong_ordering {
+    return this->rank() <=> that;
+  }
+
   friend auto operator<<(std::ostream& out, Tree& tree) noexcept
       -> std::ostream& {
     out << "Tree: " << tree.rank() << "(rank)"
         << "\nwith Nodes:\n";
-    const std::function<void(NodePtr&)> preorder = [&](auto& n) {
+    auto preorder = [&](NodePtr& n, auto&& preorder) {
       if (n == nullptr) {
         return;
       }
       out << *n << '\n';
-      preorder(n->left);
-      preorder(n->right);
+      preorder(n->left, preorder);
+      preorder(n->right, preorder);
     };
-    preorder(tree.root);
+    preorder(tree.root, preorder);
     out << std::endl;
     return out;
   }

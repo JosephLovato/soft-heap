@@ -37,7 +37,8 @@ TEST(SoftHeap, STLConstruct) {
 TEST(SoftHeap, Extract) {
   // auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   auto rand = detail::generate_rand(50);
-  auto soft_heap = SoftHeap<int>{rand.begin(), rand.end(), 0.1};
+  auto soft_heap = SoftHeap<int>{std::make_move_iterator(rand.begin()),
+                                 std::make_move_iterator(rand.end()), 0.1};
   auto fout = std::ofstream("soft_heap.txt");
   for ([[maybe_unused]] auto&& x : rand) {
     fout << soft_heap.ExtractMin() << ',';
@@ -46,7 +47,7 @@ TEST(SoftHeap, Extract) {
 }
 
 TEST(SoftHeap, ExtractMin) {
-  const auto rand = detail::generate_rand(3000);
+  auto rand = detail::generate_rand(3000);
   auto soft_heap = SoftHeap<int>(rand.begin(), rand.end(), 0.99);
   auto stl_heap =
       std::priority_queue(rand.begin(), rand.end(), std::greater<>());
