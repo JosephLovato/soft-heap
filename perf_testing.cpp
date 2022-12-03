@@ -29,8 +29,10 @@
 void test_STL(int size) {
   auto rand = generate_rand(size);
   auto min_queue = std::priority_queue<int>(rand.begin(), rand.end());
-  min_queue.top();
-  min_queue.pop();
+  for ([[maybe_unused]] auto&& x : rand) {
+    min_queue.top();
+    min_queue.pop();
+  }
 };
 
 void test_Soft_Heap_Extract(int size, int eps) {

@@ -29,9 +29,9 @@ set_property(
   PROPERTY CMAKE_BUILD_TYPE Debug
   PROPERTY CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Compiler Properties for Benchmarking
+# Compiler Properties for Perf
 target_compile_features(soft_heap_perf PRIVATE cxx_std_20)
-target_compile_options(soft_heap_perf PRIVATE -O3 -g -Wall)
+target_compile_options(soft_heap_perf PRIVATE -Wall)
 
 # Unit Testing Executable
 add_executable(soft_heap_test main.cpp test/node_tests.cpp test/tree_tests.cpp
