@@ -58,7 +58,11 @@ class Node {
       if (left == nullptr or (right != nullptr and *left > *right)) {
         std::swap(left, right);
       }
-      elements.splice(elements.end(), std::move(left->elements));
+      if (not elements.empty()) {
+        elements.splice(elements.end(), std::move(left->elements));
+      } else {
+        elements = std::move(left->elements);
+      }
       // elements.insert(elements.end(),
       //                 std::make_move_iterator(min_child->elements.begin()),
       //                 std::make_move_iterator(min_child->elements.end()));

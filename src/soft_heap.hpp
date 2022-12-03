@@ -69,12 +69,13 @@ class SoftHeap {
         tree->root = MakeNodePtr(std::move(tree->root),
                                  std::move(std::next(tree)->root));
         trees.erase(std::next(tree));
-      }
-      if (tree->rank() >= p_rank) {
+        std::advance(tree, -1);
+      } else if (tree->rank() > p_rank) {
         UpdateSuffixMin(tree);
         return;
       }
     }
+    UpdateSuffixMin(std::prev(trees.end()));
   }
 
   [[nodiscard]] constexpr auto ExtractMin() noexcept {

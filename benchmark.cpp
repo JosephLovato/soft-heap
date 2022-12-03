@@ -165,36 +165,39 @@ static void VectorSortExtractOne(benchmark::State& state) {
 // BENCHMARK(STLHeapInsert)
 //     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}})
 //     ->Complexity(benchmark::o1);
-// BENCHMARK(SoftHeapExtract)
+BENCHMARK(SoftHeapExtract)
+    // ->ArgsProduct({{2 << 16}, {1, 1000}})
+    ->Threads(8)
+    ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}, {8, 2}})
+    ->Complexity(benchmark::oNSquared);
+BENCHMARK(STLHeapExtract)
+    // ->ArgsProduct({{2 << 16}})
+    ->Threads(8)
+    ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}})
+    ->Complexity(benchmark::oNLogN);
+// BENCHMARK(SoftHeapExtractOne)
 //     // ->ArgsProduct({{2 << 16}, {1, 1000}})
+//     // ->Threads(8)
 //     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
-//     {8}})
-//     ->Complexity(benchmark::oNSquared);
-// BENCHMARK(STLHeapExtract)
+//                    {8, 16384}});
+// // ->Complexity(benchmark::oN);
+// BENCHMARK(STLHeapExtractOne)
 //     // ->ArgsProduct({{2 << 16}})
-//     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}})
-// ->Complexity(benchmark::oNLogN);
-BENCHMARK(SoftHeapExtractOne)
-    // ->ArgsProduct({{2 << 16}, {1, 1000}})
-    // ->Threads(8)
-    ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
-                   {8, 16384}});
-// ->Complexity(benchmark::oN);
-BENCHMARK(STLHeapExtractOne)
-    // ->ArgsProduct({{2 << 16}})
-    // ->Threads(8)
-    ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}});
-// ->Complexity(benchmark::oLogN);
-BENCHMARK(VectorSortExtractOne)
-    // ->ArgsProduct({{2 << 16}})
-    ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}});
-BENCHMARK(STLHeapInsert)
-    // ->ArgsProduct({{2 << 16}})
-    ->ArgsProduct({{1, 8, 64, 128, 512, 1024}});
-BENCHMARK(SoftHeapInsert)
-    // ->ArgsProduct({{2 << 16}, {1, 1000}})
-    ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
-                   {8, 16384}});
+//     // ->Threads(8)
+//     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}});
+// // ->Complexity(benchmark::oLogN);
+// BENCHMARK(VectorSortExtractOne)
+//     // ->ArgsProduct({{2 << 16}})
+//     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}});
+// BENCHMARK(STLHeapInsert)
+//     // ->ArgsProduct({{2 << 16}})
+//     ->Threads(8)
+//     ->ArgsProduct({{1, 8, 64, 128, 512, 1024}});
+// BENCHMARK(SoftHeapInsert)
+//     // ->ArgsProduct({{2 << 16}, {1, 1000}})
+//     ->Threads(8)
+//     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
+//                    {8, 16384}});
 // ->Complexity(benchmark::o1);
 // BENCHMARK(STLHeapConstruct)
 //     // ->ArgsProduct({{2 << 16}})
