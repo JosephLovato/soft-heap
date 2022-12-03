@@ -21,6 +21,18 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest googlebenchmark)
 
+# Perf Testing Executable
+add_executable(soft_heap_perf perf_testing.cpp)
+target_include_directories(soft_heap_perf PRIVATE "include" "src")
+set_property(
+  TARGET soft_heap_perf
+  PROPERTY CMAKE_BUILD_TYPE Debug
+  PROPERTY CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Compiler Properties for Benchmarking
+target_compile_features(soft_heap_perf PRIVATE cxx_std_20)
+target_compile_options(soft_heap_perf PRIVATE -O3 -g -Wall)
+
 # Unit Testing Executable
 add_executable(soft_heap_test main.cpp test/node_tests.cpp test/tree_tests.cpp
                               test/soft_heap_tests.cpp)

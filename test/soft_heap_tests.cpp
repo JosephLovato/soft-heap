@@ -48,7 +48,7 @@ TEST(SoftHeap, Extract) {
 
 TEST(SoftHeap, ExtractMin) {
   auto rand = detail::generate_rand(3000);
-  auto soft_heap = SoftHeap<int>(rand.begin(), rand.end(), 0.99);
+  auto soft_heap = SoftHeap<int>(rand.begin(), rand.end(), 0.001);
   auto stl_heap =
       std::priority_queue(rand.begin(), rand.end(), std::greater<>());
   while (not stl_heap.empty()) {
