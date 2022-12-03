@@ -12,7 +12,7 @@
 namespace soft_heap {
 
 template <policy::TotalOrdered Element,
-          policy::TotalOrderedContainer List = std::list<Element>>
+          policy::TotalOrderedContainer List = std::vector<Element>>
 class Tree {
  public:
   using NodePtr = std::unique_ptr<Node<Element, List>>;
@@ -26,6 +26,10 @@ class Tree {
 
   constexpr explicit Tree(Element&& element) noexcept
       : root(MakeNodePtr(std::forward<Element>(element))) {}
+
+  // constexpr explicit Tree(Element&& element) noexcept {
+  //   node_heap.emplace_back(std::forward<Element>(element));
+  // }
 
   [[nodiscard]] constexpr auto rank() const noexcept { return root->rank; }
 
@@ -59,6 +63,7 @@ class Tree {
     return out;
   }
 
+  // std::vector<Node<int, List>> node_heap;
   NodePtr root;
   TreeListIt min_ckey;
 

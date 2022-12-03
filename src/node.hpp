@@ -15,7 +15,7 @@
 namespace soft_heap {
 
 template <policy::TotalOrdered Element,
-          policy::TotalOrderedContainer List = std::list<Element>>
+          policy::TotalOrderedContainer List = std::vector<Element>>
 class Node {
  public:
   using NodePtr = std::unique_ptr<Node>;
@@ -55,29 +55,36 @@ class Node {
 
   constexpr void Sift() noexcept {
     while (std::ssize(elements) < size and not IsLeaf()) {
-      if (left == nullptr or (right != nullptr and *left > *right)) {
-        std::swap(left, right);
-      }
-      if (not elements.empty()) {
-        elements.splice(elements.end(), std::move(left->elements));
+      auto& min_child =
+          (left == nullptr or (right != nullptr and *left > *right)) ? right
+                                                                     : left;
+      if (elements.empty()) {
+        elements = std::move(min_child->elements);
       } else {
-        elements = std::move(left->elements);
+        std::move(std::make_move_iterator(min_child->elements.begin()),
+                  std::make_move_iterator(min_child->elements.end()),
+                  std::back_inserter(elements));
+        min_child->elements.clear();
       }
-      // elements.insert(elements.end(),
-      //                 std::make_move_iterator(min_child->elements.begin()),
-      //                 std::make_move_iterator(min_child->elements.end()));
-      // std::move(min_child->elements.begin(), min_child->elements.end(),
-      //           std::back_inserter(elements));
-      // std::move(min_child->elements.begin(), min_child->elements.end(),
-      //           elements.end());
-      ckey = left->ckey;
-      if (left->IsLeaf()) {
-        left = nullptr;  // deallocated child
+      ckey = min_child->ckey;
+      if (min_child->IsLeaf()) {
+        min_child.reset();  // deallocate child
       } else {
-        left->Sift();
+        min_child->Sift();
       }
     }
   }
+  // std::swap(left, right);
+  // auto& min_child = left;
+  // }
+  // // std::back_inserter(elements));
+  // elements.splice(elements.end(), std::move(min_child->elements));
+  // min_child = nullptr;
+  // }
+  // elements.insert(elements.begin(),
+  //                 std::make_move_iterator(min_child->elements.begin()),
+  //                 std::make_move_iterator(min_child->elements.end()));
+  // elements.reserve(elements.size() + min_child->elements.size());
 
   [[nodiscard]] constexpr auto back() const noexcept { return elements.back(); }
 

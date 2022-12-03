@@ -118,15 +118,15 @@ static void SoftHeapExtract(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto soft_heap = SoftHeap<int, std::list<int>>(rand.begin(), rand.end(),
-                                                   1.0 / state.range(1));
+    auto soft_heap = SoftHeap<int, std::vector<int>>(rand.begin(), rand.end(),
+                                                     1.0 / state.range(1));
     state.ResumeTiming();
     for ([[maybe_unused]] auto&& x : rand) {
       benchmark::DoNotOptimize(soft_heap.ExtractMin());
       benchmark::ClobberMemory();
     }
   }
-  state.SetComplexityN(state.range(0));
+  // state.SetComplexityN(state.range(0));
 }
 static void STLHeapExtract(benchmark::State& state) {
   for (auto _ : state) {
@@ -141,7 +141,7 @@ static void STLHeapExtract(benchmark::State& state) {
       benchmark::ClobberMemory();
     }
   }
-  state.SetComplexityN(state.range(0));
+  // state.SetComplexityN(state.range(0));
 }
 
 static void VectorSortExtractOne(benchmark::State& state) {
@@ -156,7 +156,7 @@ static void VectorSortExtractOne(benchmark::State& state) {
     rand.erase(rand.begin());
     benchmark::ClobberMemory();
   }
-  state.SetComplexityN(state.range(0));
+  // state.SetComplexityN(state.range(0));
 }
 // BENCHMARK(SoftHeapConstruct)
 //     // ->ArgsProduct({{2 << 16}, {1, 1000}})
@@ -167,14 +167,16 @@ static void VectorSortExtractOne(benchmark::State& state) {
 //     ->Complexity(benchmark::o1);
 BENCHMARK(SoftHeapExtract)
     // ->ArgsProduct({{2 << 16}, {1, 1000}})
-    ->Threads(8)
-    ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}, {8, 2}})
-    ->Complexity(benchmark::oNSquared);
+    // ->Threads(8)
+    ->ArgsProduct({{2 << 16}, {8}});
+// ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
+// {8}})
+// ->Complexity(benchmark::oNSquared);
 BENCHMARK(STLHeapExtract)
     // ->ArgsProduct({{2 << 16}})
-    ->Threads(8)
-    ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}})
-    ->Complexity(benchmark::oNLogN);
+    // ->Threads(8)
+    ->ArgsProduct({{2 << 16}});
+// ->Complexity(benchmark::oNLogN)
 // BENCHMARK(SoftHeapExtractOne)
 //     // ->ArgsProduct({{2 << 16}, {1, 1000}})
 //     // ->Threads(8)

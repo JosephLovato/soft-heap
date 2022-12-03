@@ -10,6 +10,9 @@
 
 namespace soft_heap::test {
 
+using ::std::list;
+using ::std::vector;
+
 // NOLINTBEGIN(modernize-use-trailing-return-type)
 
 TEST(Tree, Construct) { Tree<int> tree{0}; }
@@ -19,7 +22,7 @@ TEST(Tree, Constructor) {
   EXPECT_EQ(tree->rank(), 0);
   // EXPECT_EQ(tree->min_ckey, nullptr);
   // EXPECT_TRE(tree->suffix_min, nullptr);
-  EXPECT_NODE_EQ(tree->root, Node<int>{0, 1, std::list{3}});
+  EXPECT_NODE_EQ(tree->root, Node<int>{0, 1, vector{3}});
 }
 
 // TEST(Tree, UpdateSuffixMin) {

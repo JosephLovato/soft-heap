@@ -47,7 +47,7 @@ set_property(
 
 # Compiler Properties for Benchmarking
 target_compile_features(soft_heap_bench PRIVATE cxx_std_20)
-target_compile_options(soft_heap_bench PRIVATE -O3 -Wall)
+target_compile_options(soft_heap_bench PRIVATE -g -O3 -Wall)
 
 gtest_discover_tests(soft_heap_test)
 

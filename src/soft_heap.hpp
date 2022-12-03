@@ -1,6 +1,4 @@
 #pragma once
-#include <__iterator/concepts.h>
-
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -18,7 +16,7 @@
 namespace soft_heap {
 
 template <policy::TotalOrdered Element,
-          policy::TotalOrderedContainer List = std::list<Element>>
+          policy::TotalOrderedContainer List = std::vector<Element>>
 class SoftHeap {
  public:
   using NodePtr = std::unique_ptr<Node<Element, List>>;
