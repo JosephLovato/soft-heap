@@ -1,4 +1,5 @@
 #pragma once
+
 #include <algorithm>
 #include <deque>
 #include <iostream>
@@ -35,10 +36,11 @@ void test_STL(int size) {
   }
 };
 
-void test_Soft_Heap_Extract(int size, int eps) {
+template <int inverse_epsilon>
+void test_Soft_Heap_Extract(int size) {
   auto rand = generate_rand(size);
-  auto soft_heap = soft_heap::SoftHeap<int, std::list<int>>(
-      rand.begin(), rand.end(), 1.0 / eps);
+  auto soft_heap = soft_heap::SoftHeap<int, std::list<int>, inverse_epsilon>(
+      rand.begin(), rand.end());
   for ([[maybe_unused]] auto&& x : rand) {
     soft_heap.ExtractMin();
   }
@@ -50,7 +52,7 @@ int main(int argc, char* argv[]) {
     test_STL(std::stoi(argv[1]));
   } else {
     std::cout << "Soft Heap\n";
-    test_Soft_Heap_Extract(std::stoi(argv[1]), std::stoi(argv[2]));
+    test_Soft_Heap_Extract<8>(std::stoi(argv[1]));
   }
 
   return 0;

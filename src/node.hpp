@@ -14,8 +14,8 @@
 
 namespace soft_heap {
 
-template <policy::TotalOrdered Element,
-          policy::TotalOrderedContainer List = std::vector<Element>>
+template <policy::TotalOrdered Element, policy::TotalOrderedContainer List,
+          int inverse_epsilon>
 class Node {
  public:
   using NodePtr = std::unique_ptr<Node>;
@@ -38,10 +38,9 @@ class Node {
         left(nullptr),
         right(nullptr) {}
 
-  constexpr explicit Node(NodePtr&& node1, NodePtr&& node2,
-                          int struct_param) noexcept
+  constexpr explicit Node(NodePtr&& node1, NodePtr&& node2) noexcept
       : rank((node1 == nullptr) ? node2->rank + 1 : node1->rank + 1),
-        size((rank > struct_param)
+        size((rank > ConstCeil(std::log2(inverse_epsilon)) + 5)
                  ? (node1 == nullptr) ? node2->size + 1 : node1->size + 1
                  : 1),
         left(std::move(node1)),

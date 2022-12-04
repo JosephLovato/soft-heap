@@ -12,11 +12,12 @@
 
 namespace soft_heap::test {
 
-using NodePtr = std::unique_ptr<Node<int>>;
-using TreePtr = std::shared_ptr<Tree<int>>;
-
-[[maybe_unused]] static void EXPECT_NODE_EQ(const NodePtr& node,
-                                            const Node<int>& expect) {
+template <policy::TotalOrdered Element = int,
+          policy::TotalOrderedContainer List = std::vector<Element>,
+          int inverse_epsilon>
+[[maybe_unused]] static void EXPECT_NODE_EQ(
+    const std::unique_ptr<Node<Element, List, inverse_epsilon>>& node,
+    const Node<Element, List, inverse_epsilon>& expect) {
   ASSERT_NE(node, nullptr)
       << "\033[1;31mError: Node passed in as nullptr!\033[0m";
   EXPECT_EQ(node->rank, expect.rank);

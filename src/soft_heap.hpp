@@ -17,41 +17,29 @@
 namespace soft_heap {
 
 template <policy::TotalOrdered Element,
-          policy::TotalOrderedContainer List = std::vector<Element>>
+          policy::TotalOrderedContainer List = std::vector<Element>,
+          int inverse_epsilon = 8>
 class SoftHeap {
  public:
-  using NodePtr = std::unique_ptr<Node<Element, List>>;
-  // using TreeList = std::set<Tree<Element, List>>;
-  using TreeList = std::list<Tree<Element, List>>;
+  using NodePtr = std::unique_ptr<Node<Element, List, inverse_epsilon>>;
+  using TreeList = std::list<Tree<Element, List, inverse_epsilon>>;
   using TreeListIt = typename TreeList::iterator;
 
-  // constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
-  //     : epsilon(eps), struct_param(ConstCeil(std::log2(1.0 / eps)) + 5) {
-  //   trees.emplace_back(std::forward<Element>(element));
-  //   trees.front().min_ckey = trees.begin();
-  // }
-
-  // constexpr explicit SoftHeap(Element element, double eps = 0.1) noexcept
-  //     : epsilon(eps), struct_param(ConstCeil(std::log2(1.0 / eps)) + 5) {
-  //   trees.emplace_back(std::forward<Element>(element));
-  //   trees.begin()->min_ckey = trees.begin();
-  // }
-
-  constexpr explicit SoftHeap(Element&& element, double eps = 0.1) noexcept
-      : epsilon(eps), struct_param(ConstCeil(std::log2(1.0 / eps)) + 5) {
+  constexpr explicit SoftHeap(Element&& element) noexcept
+      : epsilon(1.0 / inverse_epsilon) {
     trees.emplace_back(std::forward<Element>(element));
     trees.begin()->min_ckey = trees.begin();
   }
 
   constexpr SoftHeap(std::input_iterator auto first,
-                     std::input_iterator auto last, double eps = 0.1) noexcept
-      : SoftHeap(std::move(*first), eps) {
+                     std::input_iterator auto last) noexcept
+      : SoftHeap(std::move(*first)) {
     std::for_each(std::next(first), last,
                   [&](auto&& e) { Insert(std::forward<Element>(e)); });
   }
 
   constexpr void Insert(Element e) noexcept {
-    Meld(SoftHeap(std::forward<Element>(e), epsilon));
+    Meld(SoftHeap(std::forward<Element>(e)));
   }
 
   constexpr void Meld(SoftHeap&& P) noexcept {
@@ -113,8 +101,8 @@ class SoftHeap {
 
  private:
   [[nodiscard]] constexpr auto MakeNodePtr(NodePtr&& x, NodePtr&& y) noexcept {
-    return std::make_unique<Node<Element, List>>(
-        std::forward<NodePtr>(x), std::forward<NodePtr>(y), struct_param);
+    return std::make_unique<Node<Element, List, inverse_epsilon>>(
+        std::forward<NodePtr>(x), std::forward<NodePtr>(y));
   }
 
   [[nodiscard]] constexpr auto rank() const noexcept {
@@ -139,7 +127,6 @@ class SoftHeap {
   }
 
   const double epsilon;
-  const int struct_param;
 };
 
 }  // namespace soft_heap

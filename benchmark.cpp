@@ -33,13 +33,12 @@ namespace bench {
 
 }  // namespace bench
 
-static void SoftHeapConstruct(benchmark::State& state) {
+static void SoftHeapConstruct8(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
     state.ResumeTiming();
-    benchmark::DoNotOptimize(
-        SoftHeap<int>(rand.begin(), rand.end(), 1.0 / state.range(1)));
+    benchmark::DoNotOptimize(SoftHeap<int>(rand.begin(), rand.end()));
     benchmark::ClobberMemory();
   }
   state.SetComplexityN(state.range(0));
@@ -57,14 +56,14 @@ static void STLHeapConstruct(benchmark::State& state) {
   state.SetComplexityN(state.range(0));
 }
 
+template <class List = std::vector<int>, int inverse_epsilon = 8>
 static void SoftHeapInsert(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
     auto rand_int = bench::rand_int(1, 100000);
-    auto soft_heap =
-        SoftHeap<int>(rand.begin(), std::next(rand.begin(), state.range(0)),
-                      1.0 / state.range(1));
+    auto soft_heap = SoftHeap<int, List, inverse_epsilon>(
+        rand.begin(), std::next(rand.begin(), state.range(0)));
     state.ResumeTiming();
     // for (int i = 0; i < 1000; ++i) {
     soft_heap.Insert(rand_int);
@@ -89,12 +88,11 @@ static void STLHeapInsert(benchmark::State& state) {
   state.SetComplexityN(state.range(0));
 }
 
-static void SoftHeapExtractOne(benchmark::State& state) {
+static void SoftHeapExtractOne8(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto soft_heap =
-        SoftHeap<int>(rand.begin(), rand.end(), 1.0 / state.range(1));
+    auto soft_heap = SoftHeap<int>(rand.begin(), rand.end());
     state.ResumeTiming();
     benchmark::DoNotOptimize(soft_heap.ExtractMin());
     benchmark::ClobberMemory();
@@ -114,12 +112,14 @@ static void STLHeapExtractOne(benchmark::State& state) {
   }
   state.SetComplexityN(state.range(0));
 }
+
+template <class List = std::vector<int>, int inverse_epsilon = 8>
 static void SoftHeapExtract(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto soft_heap = SoftHeap<int, std::vector<int>>(rand.begin(), rand.end(),
-                                                     1.0 / state.range(1));
+    auto soft_heap =
+        SoftHeap<int, List, inverse_epsilon>(rand.begin(), rand.end());
     state.ResumeTiming();
     for ([[maybe_unused]] auto&& x : rand) {
       benchmark::DoNotOptimize(soft_heap.ExtractMin());
@@ -165,10 +165,10 @@ static void VectorSortExtractOne(benchmark::State& state) {
 // BENCHMARK(STLHeapInsert)
 //     ->ArgsProduct({{128, 512, 1024, 2048, 4096, 8192, 16384, 32768}})
 //     ->Complexity(benchmark::o1);
-BENCHMARK(SoftHeapExtract)
+BENCHMARK(SoftHeapExtract<std::vector<int>, 8>)
     // ->ArgsProduct({{2 << 16}, {1, 1000}})
     // ->Threads(8)
-    ->ArgsProduct({{2 << 16}, {8}});
+    ->ArgsProduct({{2 << 16}});
 // ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
 // {8}})
 // ->Complexity(benchmark::oNSquared);

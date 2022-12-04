@@ -11,17 +11,18 @@
 
 namespace soft_heap {
 
-template <policy::TotalOrdered Element,
-          policy::TotalOrderedContainer List = std::vector<Element>>
+template <policy::TotalOrdered Element, policy::TotalOrderedContainer List,
+          int inverse_epsilon>
 class Tree {
  public:
-  using NodePtr = std::unique_ptr<Node<Element, List>>;
+  using NodePtr = std::unique_ptr<Node<Element, List, inverse_epsilon>>;
   // using TreeList = std::set<Tree<Element, List>>;
-  using TreeList = std::list<Tree<Element, List>>;
+  using TreeList = std::list<Tree>;
   using TreeListIt = typename TreeList::iterator;
 
   [[nodiscard]] constexpr auto MakeNodePtr(Element&& elem) const noexcept {
-    return std::make_unique<Node<Element, List>>(std::forward<Element>(elem));
+    return std::make_unique<Node<Element, List, inverse_epsilon>>(
+        std::forward<Element>(elem));
   }
 
   constexpr explicit Tree(Element&& element) noexcept

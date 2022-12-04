@@ -49,3 +49,7 @@ fort.999
 
 # misc
 .DS_Store
+src/flat_node.hpp
+.gitignore
+src/flat_soft_heap.hpp
+src/flat_tree.hpp

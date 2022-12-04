@@ -7,57 +7,26 @@
 #include <random>
 #include <vector>
 
-#include "soft_heap.hpp"
+#include "flat_soft_heap.hpp"
 
 namespace soft_heap::test {
 
 namespace detail {
 
-[[nodiscard]] auto generate_rand(int n) noexcept {
-  auto v = std::vector<int>(n);
-  std::iota(v.begin(), v.end(), 1);  // 1,2,...,size-1
-  std::shuffle(v.begin(), v.end(), std::mt19937(std::random_device()()));
-  return v;
-}
+// [[nodiscard]] auto generate_rand(int n) noexcept {
+//   auto v = std::vector<int>(n);
+//   std::iota(v.begin(), v.end(), 1);  // 1,2,...,size-1
+//   std::shuffle(v.begin(), v.end(), std::mt19937(std::random_device()()));
+//   return v;
+// }
 
 }  // namespace detail
-
+   //
 // NOLINTBEGIN(modernize-use-trailing-return-type)
 
-TEST(SoftHeap, Construct) { SoftHeap<int> soft_heap{0}; }
-
-TEST(SoftHeap, STLConstruct) {
-  auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  auto soft_heap = SoftHeap<int, std::vector<int>, 2>{rand.begin(), rand.end()};
-  auto fout = std::ofstream("soft_heap.txt");
-  fout << soft_heap;
-}
-
-TEST(SoftHeap, Extract) {
-  // auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  auto rand = detail::generate_rand(50);
-  auto soft_heap =
-      SoftHeap<int, std::vector<int>, 10>{std::make_move_iterator(rand.begin()),
-                                          std::make_move_iterator(rand.end())};
-  auto fout = std::ofstream("soft_heap.txt");
-  for ([[maybe_unused]] auto&& x : rand) {
-    fout << soft_heap.ExtractMin() << ',';
-  }
-  fout << std::endl;
-}
-
-TEST(SoftHeap, ExtractMin) {
-  auto rand = detail::generate_rand(3000);
-  auto soft_heap =
-      SoftHeap<int, std::vector<int>, 1000>(rand.begin(), rand.end());
-  auto stl_heap =
-      std::priority_queue(rand.begin(), rand.end(), std::greater<>());
-  while (not stl_heap.empty()) {
-    const auto sh_elem = soft_heap.ExtractMin();
-    const auto stl_elem = stl_heap.top();
-    stl_heap.pop();
-    EXPECT_EQ(sh_elem, stl_elem);
-  }
+TEST(FlatSoftHeap, Construct) {
+  auto soft_heap = FlatSoftHeap<int, 8>(0);
+  // EXPECT_EQ(node->rank, expect.rank);
 }
 
 // NOLINTEND(modernize-use-trailing-return-type)
