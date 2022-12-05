@@ -60,10 +60,11 @@ class Node {
       if (elements.empty()) {
         elements = std::move(min_child->elements);
       } else {
-        std::move(std::make_move_iterator(min_child->elements.begin()),
-                  std::make_move_iterator(min_child->elements.end()),
+        auto min_elements = min_child->elements;
+        std::move(std::make_move_iterator(min_elements.begin()),
+                  std::make_move_iterator(min_elements.end()),
                   std::back_inserter(elements));
-        min_child->elements.clear();
+        min_elements.clear();
       }
       ckey = min_child->ckey;
       if (min_child->IsLeaf()) {

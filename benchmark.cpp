@@ -168,14 +168,15 @@ static void VectorSortExtractOne(benchmark::State& state) {
 BENCHMARK(SoftHeapExtract<std::vector<int>, 8>)
     // ->ArgsProduct({{2 << 16}, {1, 1000}})
     // ->Threads(8)
-    ->ArgsProduct({{2 << 16}});
-// ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
-// {8}})
+//    ->ArgsProduct({{2 << 16}});
+ ->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768},
+ {8}});
 // ->Complexity(benchmark::oNSquared);
 BENCHMARK(STLHeapExtract)
     // ->ArgsProduct({{2 << 16}})
     // ->Threads(8)
-    ->ArgsProduct({{2 << 16}});
+//    ->ArgsProduct({{2 << 16}});
+->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}});
 // ->Complexity(benchmark::oNLogN)
 // BENCHMARK(SoftHeapExtractOne)
 //     // ->ArgsProduct({{2 << 16}, {1, 1000}})
