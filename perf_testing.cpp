@@ -47,13 +47,6 @@ void test_Soft_Heap_Extract(int size) {
 };
 
 int main(int argc, char* argv[]) {
-  if (argc == 2) {
-    std::cout << "STL\n";
-    test_STL(std::stoi(argv[1]));
-  } else {
-    std::cout << "Soft Heap\n";
     test_Soft_Heap_Extract<8>(std::stoi(argv[1]));
-  }
-
   return 0;
 }
