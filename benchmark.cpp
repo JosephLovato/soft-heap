@@ -141,7 +141,7 @@ static void STLHeapExtract(benchmark::State& state) {
       benchmark::ClobberMemory();
     }
   }
-  // state.SetComplexityN(state.range(0));
+   state.SetComplexityN(state.range(0));
 }
 
 static void VectorSortExtractOne(benchmark::State& state) {
@@ -173,13 +173,13 @@ BENCHMARK(SoftHeapExtract<std::vector<int>, 8>)
  {8}})
 //  ->ArgsProduct({{1000000}, {8}});
  ->Complexity(benchmark::oN);
-BENCHMARK(STLHeapExtract);
+BENCHMARK(STLHeapExtract)
     // ->ArgsProduct({{2 << 16}})
     // ->Threads(8)
-//    ->ArgsProduct({{2 << 16}});
-//->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}});
+//    ->ArgsProduct({{2 << 16}})
+->ArgsProduct({{8, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768}})
 //  ->ArgsProduct({{1000000}});
-// ->Complexity(benchmark::oNLogN)
+ ->Complexity(benchmark::oNLogN);
 // BENCHMARK(SoftHeapExtractOne)
 //     // ->ArgsProduct({{2 << 16}, {1, 1000}})
 //     // ->Threads(8)
