@@ -57,22 +57,24 @@ class Node {
       auto& min_child =
           (left == nullptr or (right != nullptr and *left > *right)) ? right
                                                                      : left;
+      auto& min_element = min_child->elements;
       if (elements.empty()) {
-        elements = std::move(min_child->elements);
+        elements = std::move(min_element);
       } else {
-        std::move(std::make_move_iterator(min_child->elements.begin()),
-                  std::make_move_iterator(min_child->elements.end()),
-                  std::back_inserter(elements));
-        min_child->elements.clear();
+        elements.insert(elements.end(),
+                        std::make_move_iterator(min_element.begin()),
+                        std::make_move_iterator(min_element.end()));
       }
       ckey = min_child->ckey;
       if (min_child->IsLeaf()) {
         min_child.reset();  // deallocate child
       } else {
+        min_element.clear();
         min_child->Sift();
       }
     }
   }
+
   // std::swap(left, right);
   // auto& min_child = left;
   // }

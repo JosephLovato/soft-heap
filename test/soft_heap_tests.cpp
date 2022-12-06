@@ -49,14 +49,18 @@ TEST(SoftHeap, Extract) {
 TEST(SoftHeap, ExtractMin) {
   auto rand = detail::generate_rand(3000);
   auto soft_heap =
+      // SoftHeap<int, std::vector<int>, 10>(rand.begin(), rand.end());
       SoftHeap<int, std::vector<int>, 1000>(rand.begin(), rand.end());
   auto stl_heap =
       std::priority_queue(rand.begin(), rand.end(), std::greater<>());
+  auto fout = std::ofstream("soft_heap_extract.txt");
+
   while (not stl_heap.empty()) {
     const auto sh_elem = soft_heap.ExtractMin();
     const auto stl_elem = stl_heap.top();
     stl_heap.pop();
     EXPECT_EQ(sh_elem, stl_elem);
+    fout << sh_elem << ',';
   }
 }
 
