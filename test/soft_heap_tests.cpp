@@ -64,6 +64,24 @@ TEST(SoftHeap, ExtractMin) {
   }
 }
 
+TEST(SoftHeap, ExtractMinVerifyAllElements) {
+  const int inverse_eps = 4;
+  auto rand = detail::generate_rand(3000);
+  auto soft_heap = SoftHeap<int, std::vector<int>, inverse_eps>(
+      rand.begin(), rand.end());
+
+  auto fout = std::ofstream("soft_heap_extract_verify_all_elements.txt");
+
+  std::set<int> extracted_elems;
+  for (int i = 0; i < rand.size(); i++) {
+    const auto sh_elem = soft_heap.ExtractMin();
+    if (!extracted_elems.insert(sh_elem).second) {
+      fout << sh_elem << ',';
+      FAIL();
+    }
+  }
+}
+
 // NOLINTEND(modernize-use-trailing-return-type)
 
 }  // namespace soft_heap::test
