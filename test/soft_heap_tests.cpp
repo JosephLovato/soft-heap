@@ -67,8 +67,8 @@ TEST(SoftHeap, ExtractMin) {
 TEST(SoftHeap, ExtractMinVerifyAllElements) {
   const int inverse_eps = 4;
   auto rand = detail::generate_rand(3000);
-  auto soft_heap = SoftHeap<int, std::vector<int>, inverse_eps>(
-      rand.begin(), rand.end());
+  auto soft_heap =
+      SoftHeap<int, std::vector<int>, inverse_eps>(rand.begin(), rand.end());
 
   auto fout = std::ofstream("soft_heap_extract_verify_all_elements.txt");
 
@@ -78,6 +78,35 @@ TEST(SoftHeap, ExtractMinVerifyAllElements) {
     if (!extracted_elems.insert(sh_elem).second) {
       fout << sh_elem << ',';
       FAIL();
+    }
+  }
+}
+
+TEST(SoftHeap, TreeListSize) {
+  std::ofstream file("tree_list_size.txt");
+  file << "soft_heap_size,tree_list_size" << std::endl;
+  for (int i = 1; i <= 10; i++) {
+    auto size = i * 1000;
+    auto rand = detail::generate_rand(size);
+    auto soft_heap =
+        SoftHeap<int, std::vector<int>, 1000>(rand.begin(), rand.end());
+    file << size << "," << soft_heap.trees.size() << std::endl;
+  }
+}
+
+TEST(SoftHeap, TreeListSizeOverTime) {
+  std::ofstream file("tree_list_over_time.txt");
+  file << "insert_number,tree_list_size,ranks" << std::endl;
+  auto rand = detail::generate_rand(10000);
+  auto soft_heap = SoftHeap<int, std::vector<int>, 2>(std::move(rand[0]));
+  for (int i = 1; i < 10000; i++) {
+    soft_heap.Insert(rand[i]);
+    if (i % 1 == 0) {
+      file << i << "," << soft_heap.trees.size() << "::";
+      for (const auto& t : soft_heap.trees) {
+        file << t.rank() << ",";
+      }
+      file << std::endl;
     }
   }
 }
