@@ -84,6 +84,7 @@ class SoftHeap {
         }
       }
     }
+    // TODO return list of corrupted elements and element
     return first_elem;
   }
 

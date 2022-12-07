@@ -45,6 +45,7 @@ class Node {
                  : 1),
         left(std::move(node1)),
         right(std::move(node2)) {
+    // TODO remove sift call
     Sift();
   }
 
@@ -52,6 +53,7 @@ class Node {
     return left == nullptr and right == nullptr;
   };
 
+  // TODO return list of corrupted elements
   constexpr void Sift() noexcept {
     while (std::ssize(elements) < size and not IsLeaf()) {
       auto& min_child =
