@@ -35,7 +35,7 @@ target_compile_options(soft_heap_perf PRIVATE -Wall)
 
 # Unit Testing Executable
 add_executable(soft_heap_test main.cpp test/node_tests.cpp test/tree_tests.cpp
-  test/soft_heap_tests.cpp)
+  test/soft_heap_tests.cpp applications/selection_algorithm/tests.cpp applications/selection_algorithm/selection_algorithm.hpp applications/selection_algorithm/selection_algorithm.cpp)
 target_link_libraries(soft_heap_test PRIVATE gtest_main gmock gtest)
 target_include_directories(soft_heap_test PRIVATE "include" "src")
 set_property(
