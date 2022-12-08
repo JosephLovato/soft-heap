@@ -96,6 +96,15 @@ class Node {
         //         child 5 6 7 8 ckeys = 8
         // case 2: root 1 2 3 4 ckey = 5
         //         child 6 
+
+        // max_elem boolean idea
+        // member var of node
+        // when create node max_elem = True
+        // on ExtractMin()
+        //  if elem extracted == ckey
+        //    max_elem = False
+        // on Sift()
+        //    root->max_elem = child->max_elem
       }
       ckey = min_child->ckey;
       if (min_child->IsLeaf()) {
