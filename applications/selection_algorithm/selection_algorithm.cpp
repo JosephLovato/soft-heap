@@ -15,13 +15,13 @@ void standard_heap_selection(std::input_iterator auto first,
 };
 
 auto selection_algorithm::standard_heap_selection(
-    const std::priority_queue<int>& input_heap, const size_t k) noexcept
+    const std::priority_queue<int, std::vector<int>, std::greater<>>& input_heap, const size_t k) noexcept
     -> std::vector<int> {
   return std::vector<int>{};
 };
 
 auto selection_algorithm::soft_heap_selection(
-    const std::priority_queue<int>& input_heap, const size_t k) noexcept
+    const std::priority_queue<int, std::vector<int>, std::greater<>>& input_heap, const size_t k) noexcept
     -> std::vector<int> {
   return std::vector<int>{};
 };

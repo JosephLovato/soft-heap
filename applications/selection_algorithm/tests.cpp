@@ -32,12 +32,11 @@ namespace bench {
 TEST(Selection, Soft_Heap) {
   const size_t k = 200;
   auto rand = bench::generate_rand(1000);
-  auto min_heap = std::priority_queue<int>(rand.begin(), rand.end());
+  auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(rand.begin(), rand.end());
 
   auto k_elements = selection_algorithm::standard_heap_selection(min_heap, k);
 
   ASSERT_EQ(k_elements.size(), k);
-
   for (size_t i = 0; i < k; i++) {
     if (min_heap.top() != k_elements.at(i)) {
       FAIL();
@@ -49,7 +48,7 @@ TEST(Selection, Soft_Heap) {
 TEST(Selection, Standard_Heap) {
   const size_t k = 200;
   auto rand = bench::generate_rand(1000);
-  auto min_heap = std::priority_queue<int>(rand.begin(), rand.end());
+  auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(rand.begin(), rand.end());
 
   auto k_elements = selection_algorithm::soft_heap_selection(min_heap, k);
 
