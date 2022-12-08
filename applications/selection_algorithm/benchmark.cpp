@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -45,19 +46,48 @@ static void standard_heap(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto min_heap = std::priority_queue<int>(rand.begin(), rand.end());
+    auto min_heap = std::vector<int>(rand.begin(), rand.end());
+    std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
     auto k = rand.size() / 2;
     state.ResumeTiming();
     benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection(min_heap, k));
     benchmark::ClobberMemory();
   }
+  state.SetComplexityN(state.range(0));
 }
+
+static void standard_heap_vector(benchmark::State& state) {
+  for (auto _ : state) {
+    state.PauseTiming();
+    auto rand = bench::generate_rand(state.range(0));
+    auto min_heap = std::vector<int>(rand.begin(), rand.end());
+    // std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
+    auto k = rand.size() / 2;
+    state.ResumeTiming();
+    benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection_vector(min_heap, k));
+    benchmark::ClobberMemory();
+  }
+  state.SetComplexityN(state.range(0));
+}
+
+// static void standard_heap_iterator(benchmark::State& state) {
+//   for (auto _ : state) {
+//     state.PauseTiming();
+//     auto rand = bench::generate_rand(state.range(0));
+//     auto min_heap = std::vector<int>(rand.begin(), rand.end());
+//     auto k = rand.size() / 2;
+//     state.ResumeTiming();
+//     benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection(min_heap.begin(), min_heap.end(), k));
+//     benchmark::ClobberMemory();
+//   }
+//   state.SetComplexityN(state.range(0));
+// }
 
 static void soft_heap(benchmark::State& state) {
   for (auto _: state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto min_heap = std::priority_queue<int>(rand.begin(), rand.end());
+    auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(rand.begin(), rand.end());
     auto k = rand.size() / 2;
     state.ResumeTiming();
     benchmark::DoNotOptimize(selection_algorithm::soft_heap_selection(min_heap, k));
@@ -71,8 +101,16 @@ BENCHMARK(Nth_Element)
 
 BENCHMARK(standard_heap)
     ->ArgsProduct({{10, 100, 1000, 10000}})
-    ->Complexity(benchmark::oN);
+    ->Complexity(benchmark::oNLogN);
 
-BENCHMARK(soft_heap)
+BENCHMARK(standard_heap_vector)
     ->ArgsProduct({{10, 100, 1000, 10000}})
-    ->Complexity(benchmark::oN);
+    ->Complexity(benchmark::oNLogN);
+
+// BENCHMARK(standard_heap_iterator)
+//     ->ArgsProduct({{10, 100, 1000, 10000}})
+//     ->Complexity(benchmark::oNLogN);
+
+// BENCHMARK(soft_heap)
+//     ->ArgsProduct({{10, 100, 1000, 10000}})
+//     ->Complexity(benchmark::oN);

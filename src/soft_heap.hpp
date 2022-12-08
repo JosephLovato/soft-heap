@@ -88,6 +88,29 @@ class SoftHeap {
     return first_elem;
   }
 
+  [[nodiscard]] constexpr auto ExtractMinC() noexcept {
+    const auto& min_tree = trees.front().min_ckey;
+    const auto& x = min_tree->root;
+    const auto first_elem = x->back();
+    x->pop_back();
+    if (2 * std::ssize(x->elements) < x->size) {
+      if (not x->IsLeaf()) {
+        x->Sift();
+        UpdateSuffixMin(min_tree);
+      } else if (x->elements.empty()) {
+        if (min_tree != trees.begin()) {
+          const auto prev = std::prev(min_tree);
+          trees.erase(min_tree);
+          UpdateSuffixMin(prev);
+        } else {
+          trees.erase(min_tree);
+        }
+      }
+    }
+    // TODO return list of corrupted elements and element
+    // return std::make_pair(first_elem, x;
+  }
+
   friend auto operator<<(std::ostream& out, SoftHeap& soft_heap) noexcept
       -> std::ostream& {
     out << "SoftHeap: " << soft_heap.rank() << "(rank) with trees: \n";

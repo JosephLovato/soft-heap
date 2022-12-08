@@ -1,12 +1,15 @@
+#include <__iterator/concepts.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <queue>
 #include <random>
 #include <vector>
+#include <iterator>
 
 #include "selection_algorithm.hpp"
 
@@ -29,12 +32,13 @@ namespace bench {
 
 }  // namespace bench
 
-TEST(Selection, Soft_Heap) {
+TEST(Selection, Standard_Heap) {
   const size_t k = 200;
-  auto rand = bench::generate_rand(1000);
-  auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(rand.begin(), rand.end());
+  auto input_heap = bench::generate_rand(1000);
+  std::make_heap(input_heap.begin(), input_heap.end(), std::greater<>{});
+  std::priority_queue<int, std::vector<int>, std::greater<>> min_heap(input_heap.begin(), input_heap.end());
 
-  auto k_elements = selection_algorithm::standard_heap_selection(min_heap, k);
+  auto k_elements = selection_algorithm::standard_heap_selection(input_heap, k);
 
   ASSERT_EQ(k_elements.size(), k);
   for (size_t i = 0; i < k; i++) {
@@ -45,10 +49,28 @@ TEST(Selection, Soft_Heap) {
   }
 }
 
-TEST(Selection, Standard_Heap) {
+// TEST(Selection, Standard_Heap_Iterator) {
+//   const size_t k = 200;
+//   auto input_heap = bench::generate_rand(1000);
+//   std::make_heap(input_heap.begin(), input_heap.end(), std::greater<>{});
+//   std::priority_queue<int, std::vector<int>, std::greater<>> min_heap(input_heap.begin(), input_heap.end());
+
+//   auto k_elements = selection_algorithm::standard_heap_selection(input_heap.begin(), input_heap.end(), k);
+
+//   ASSERT_EQ(k_elements.size(), k);
+//   for (size_t i = 0; i < k; i++) {
+//     if (min_heap.top() != k_elements.at(i)) {
+//       FAIL();
+//     }
+//     min_heap.pop();
+//   }
+// }
+
+TEST(Selection, Soft_Heap) {
   const size_t k = 200;
-  auto rand = bench::generate_rand(1000);
-  auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(rand.begin(), rand.end());
+  auto input_heap = bench::generate_rand(1000);
+  std::make_heap(input_heap.begin(), input_heap.end(), std::greater<>{});
+  std::priority_queue<int, std::vector<int>, std::greater<>> min_heap(input_heap.begin(), input_heap.end());
 
   auto k_elements = selection_algorithm::soft_heap_selection(min_heap, k);
 

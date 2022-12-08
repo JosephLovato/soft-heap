@@ -53,7 +53,6 @@ class Node {
     return left == nullptr and right == nullptr;
   };
 
-  // TODO return list of corrupted elements
   constexpr void Sift() noexcept {
     while (std::ssize(elements) < size and not IsLeaf()) {
       auto& min_child =
@@ -66,6 +65,37 @@ class Node {
         elements.insert(elements.end(),
                         std::make_move_iterator(min_element.begin()),
                         std::make_move_iterator(min_element.end()));
+      }
+      ckey = min_child->ckey;
+      if (min_child->IsLeaf()) {
+        min_child.reset();  // deallocate child
+      } else {
+        min_element.clear();
+        min_child->Sift();
+      }
+    }
+  }
+
+    // TODO return list of corrupted elements
+  constexpr void SiftC() noexcept {
+    while (std::ssize(elements) < size and not IsLeaf()) {
+      auto& min_child =
+          (left == nullptr or (right != nullptr and *left > *right)) ? right
+                                                                     : left;
+      auto& min_element = min_child->elements;
+      if (elements.empty()) {
+        elements = std::move(min_element);
+      } else {
+        elements.insert(elements.end(),
+                        std::make_move_iterator(min_element.begin()),
+                        std::make_move_iterator(min_element.end()));
+        // for each e in min_element
+        //   if e.key == min_element.ckey and e.key < this.ckey
+
+        // case 1: root 1 2 3 4 ckey = 4 maxkey= 3
+        //         child 5 6 7 8 ckeys = 8
+        // case 2: root 1 2 3 4 ckey = 5
+        //         child 6 
       }
       ckey = min_child->ckey;
       if (min_child->IsLeaf()) {
