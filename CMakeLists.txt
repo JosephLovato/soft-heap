@@ -35,7 +35,7 @@ target_compile_options(soft_heap_perf PRIVATE -Wall)
 
 # Unit Testing Executable
 add_executable(soft_heap_test main.cpp test/node_tests.cpp test/tree_tests.cpp
-                              test/soft_heap_tests.cpp)
+  test/soft_heap_tests.cpp)
 target_link_libraries(soft_heap_test PRIVATE gtest_main gmock gtest)
 target_include_directories(soft_heap_test PRIVATE "include" "src")
 set_property(
@@ -50,7 +50,7 @@ target_compile_options(soft_heap_test PRIVATE -g -Wall -Wextra)
 # Benchmark Executable
 add_executable(soft_heap_bench benchmark.cpp)
 target_link_libraries(soft_heap_bench PRIVATE benchmark::benchmark
-                                              benchmark::benchmark_main)
+  benchmark::benchmark_main)
 target_include_directories(soft_heap_bench PRIVATE "include" "src")
 set_property(
   TARGET soft_heap_bench
@@ -64,3 +64,14 @@ target_compile_options(soft_heap_bench PRIVATE -g -O3 -Wall)
 gtest_discover_tests(soft_heap_test)
 
 enable_testing()
+
+# ## Selection Algoithm ###
+# Benchmark Executable
+add_executable(selection_algorithm_bench applications/selection_algorithm/benchmark.cpp)
+target_link_libraries(selection_algorithm_bench PRIVATE benchmark::benchmark
+  benchmark::benchmark_main)
+target_include_directories(soft_heap_bench PRIVATE "include" "src")
+set_property(
+  TARGET selection_algorithm_bench
+  PROPERTY CMAKE_BUILD_TYPE Release
+  PROPERTY CMAKE_EXPORT_COMPILE_COMMANDS ON)
