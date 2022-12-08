@@ -1,17 +1,16 @@
 #include <benchmark/benchmark.h>
 
 #include <algorithm>
-#include <deque>
 #include <iostream>
-#include <list>
 #include <memory>
 #include <queue>
 #include <random>
-#include <string>
 #include <vector>
 
+#include "selection_algorithm.hpp"
 
-namespace selection_algorithm {
+
+using namespace selection_algorithm;
 
 namespace bench {
 
@@ -34,15 +33,46 @@ static void Nth_Element(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
+    auto k = rand.begin() + rand.size() / 2;
     state.ResumeTiming();
-    std::nth_element(rand.begin(), rand.end(), 10);
+    std::nth_element(rand.begin(), k, rand.end());
     benchmark::ClobberMemory();
   }
   state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(Nth_Element)
-    ->Ranges({{10, 100, 1000, 10000}});
-
+static void standard_heap(benchmark::State& state) {
+  for (auto _ : state) {
+    state.PauseTiming();
+    auto rand = bench::generate_rand(state.range(0));
+    auto min_heap = std::priority_queue<int>(rand.begin(), rand.end());
+    auto k = rand.size() / 2;
+    state.ResumeTiming();
+    benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection(min_heap, k));
+    benchmark::ClobberMemory();
+  }
 }
 
+static void soft_heap(benchmark::State& state) {
+  for (auto _: state) {
+    state.PauseTiming();
+    auto rand = bench::generate_rand(state.range(0));
+    auto min_heap = std::priority_queue<int>(rand.begin(), rand.end());
+    auto k = rand.size() / 2;
+    state.ResumeTiming();
+    benchmark::DoNotOptimize(selection_algorithm::soft_heap_selection(min_heap, k));
+    benchmark::ClobberMemory();
+  }
+}
+
+BENCHMARK(Nth_Element)
+    ->ArgsProduct({{10, 100, 1000, 10000}})
+    ->Complexity(benchmark::oN);
+
+BENCHMARK(standard_heap)
+    ->ArgsProduct({{10, 100, 1000, 10000}})
+    ->Complexity(benchmark::oN);
+
+BENCHMARK(soft_heap)
+    ->ArgsProduct({{10, 100, 1000, 10000}})
+    ->Complexity(benchmark::oN);

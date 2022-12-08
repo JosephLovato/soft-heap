@@ -67,7 +67,7 @@ enable_testing()
 
 # ## Selection Algoithm ###
 # Benchmark Executable
-add_executable(selection_algorithm_bench applications/selection_algorithm/benchmark.cpp)
+add_executable(selection_algorithm_bench applications/selection_algorithm/benchmark.cpp applications/selection_algorithm/selection_algorithm.hpp applications/selection_algorithm/selection_algorithm.cpp)
 target_link_libraries(selection_algorithm_bench PRIVATE benchmark::benchmark
   benchmark::benchmark_main)
 target_include_directories(soft_heap_bench PRIVATE "include" "src")
