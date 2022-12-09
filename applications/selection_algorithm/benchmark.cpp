@@ -10,7 +10,6 @@
 
 #include "selection_algorithm.hpp"
 
-
 using namespace selection_algorithm;
 
 namespace bench {
@@ -50,7 +49,8 @@ static void standard_heap(benchmark::State& state) {
     std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
     auto k = rand.size() / 2;
     state.ResumeTiming();
-    benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection(min_heap, k));
+    benchmark::DoNotOptimize(
+        selection_algorithm::standard_heap_selection(min_heap, k));
     benchmark::ClobberMemory();
   }
   state.SetComplexityN(state.range(0));
@@ -64,7 +64,8 @@ static void standard_heap_vector(benchmark::State& state) {
     // std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
     auto k = rand.size() / 2;
     state.ResumeTiming();
-    benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection_vector(min_heap, k));
+    benchmark::DoNotOptimize(
+        selection_algorithm::standard_heap_selection_vector(min_heap, k));
     benchmark::ClobberMemory();
   }
   state.SetComplexityN(state.range(0));
@@ -77,20 +78,22 @@ static void standard_heap_vector(benchmark::State& state) {
 //     auto min_heap = std::vector<int>(rand.begin(), rand.end());
 //     auto k = rand.size() / 2;
 //     state.ResumeTiming();
-//     benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection(min_heap.begin(), min_heap.end(), k));
-//     benchmark::ClobberMemory();
+//     benchmark::DoNotOptimize(selection_algorithm::standard_heap_selection(min_heap.begin(),
+//     min_heap.end(), k)); benchmark::ClobberMemory();
 //   }
 //   state.SetComplexityN(state.range(0));
 // }
 
 static void soft_heap(benchmark::State& state) {
-  for (auto _: state) {
+  for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(rand.begin(), rand.end());
+    auto min_heap = std::priority_queue<int, std::vector<int>, std::greater<>>(
+        rand.begin(), rand.end());
     auto k = rand.size() / 2;
     state.ResumeTiming();
-    benchmark::DoNotOptimize(selection_algorithm::soft_heap_selection(min_heap, k));
+    benchmark::DoNotOptimize(
+        selection_algorithm::soft_heap_selection(min_heap, k));
     benchmark::ClobberMemory();
   }
 }

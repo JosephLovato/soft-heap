@@ -28,7 +28,8 @@ class Node {
         rank(0),
         size(1),
         left(nullptr),
-        right(nullptr) {}
+        right(nullptr),
+        ckey_present(true) {}
 
   constexpr explicit Node(int rank, int size, List&& list) noexcept
       : elements(std::move(list)),
@@ -36,7 +37,8 @@ class Node {
         rank(rank),
         size(size),
         left(nullptr),
-        right(nullptr) {}
+        right(nullptr),
+        ckey_present(true) {}
 
   constexpr explicit Node(NodePtr&& node1, NodePtr&& node2) noexcept
       : rank((node1 == nullptr) ? node2->rank + 1 : node1->rank + 1),
@@ -44,7 +46,8 @@ class Node {
                  ? (node1 == nullptr) ? node2->size + 1 : node1->size + 1
                  : 1),
         left(std::move(node1)),
-        right(std::move(node2)) {
+        right(std::move(node2)),
+        ckey_present(true) {
     // TODO remove sift call
     Sift();
   }
@@ -76,8 +79,8 @@ class Node {
     }
   }
 
-    // TODO return list of corrupted elements
-  constexpr void SiftC() noexcept {
+  // TODO return list of corrupted elements
+  constexpr void SiftC(std::vector<int>& corrupted_elems) noexcept {
     while (std::ssize(elements) < size and not IsLeaf()) {
       auto& min_child =
           (left == nullptr or (right != nullptr and *left > *right)) ? right
@@ -89,29 +92,37 @@ class Node {
         elements.insert(elements.end(),
                         std::make_move_iterator(min_element.begin()),
                         std::make_move_iterator(min_element.end()));
+        // If the ckey is still present as a key in elements, it will become
+        // corrupted when sifting up from the min_child
+        if (ckey_present) {
+          corrupted_elems.push_back(ckey);
+        }
         // for each e in min_element
         //   if e.key == min_element.ckey and e.key < this.ckey
 
-        // case 1: root 1 2 3 4 ckey = 4 maxkey= 3
+        // case 1: root 1 3 4 ckey = 4 maxkey= 3
         //         child 5 6 7 8 ckeys = 8
         // case 2: root 1 2 3 4 ckey = 5
-        //         child 6 
+        //         child 6
 
-        // max_elem boolean idea
+        // ckey_present boolean idea
         // member var of node
-        // when create node max_elem = True
+        // when create node ckey_present = True
         // on ExtractMin()
         //  if elem extracted == ckey
-        //    max_elem = False
+        //    ckey_present = False
         // on Sift()
-        //    root->max_elem = child->max_elem
+        //    if current_node->ckey_present = True
+        //      add ckey to corrupted list
+        //    current_node->ckey_present = child->ckey_present
       }
       ckey = min_child->ckey;
+      ckey_present = min_child->ckey_present;
       if (min_child->IsLeaf()) {
         min_child.reset();  // deallocate child
       } else {
         min_element.clear();
-        min_child->Sift();
+        min_child->SiftC(corrupted_elems);
       }
     }
   }
@@ -163,6 +174,7 @@ class Node {
   const int size;
   NodePtr left;
   NodePtr right;
+  bool ckey_present;
 };
 
 }  // namespace soft_heap

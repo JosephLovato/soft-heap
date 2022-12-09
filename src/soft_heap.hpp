@@ -9,6 +9,8 @@
 #include <memory>
 #include <set>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "policies.hpp"
 #include "tree.hpp"
@@ -88,14 +90,22 @@ class SoftHeap {
     return first_elem;
   }
 
-  [[nodiscard]] constexpr auto ExtractMinC() noexcept {
+  [[nodiscard]] auto ExtractMinC() noexcept
+      -> std::pair<Element, std::vector<Element>> {
     const auto& min_tree = trees.front().min_ckey;
     const auto& x = min_tree->root;
     const auto first_elem = x->back();
+    std::vector<Element> corrupted_elements;
     x->pop_back();
+    if (first_elem == x->ckey) {
+      x->ckey_present = false;
+      // Soft Select algo specifies adding min element to list of corrupted
+      // elements if element is not corrupted
+      corrupted_elements.push_back(std::make_pair(first_elem));
+    }
     if (2 * std::ssize(x->elements) < x->size) {
       if (not x->IsLeaf()) {
-        x->Sift();
+        x->SiftC(corrupted_elements);
         UpdateSuffixMin(min_tree);
       } else if (x->elements.empty()) {
         if (min_tree != trees.begin()) {
@@ -107,8 +117,7 @@ class SoftHeap {
         }
       }
     }
-    // TODO return list of corrupted elements and element
-    // return std::make_pair(first_elem, x;
+    return std::make_pair(first_elem, corrupted_elements);
   }
 
   friend auto operator<<(std::ostream& out, SoftHeap& soft_heap) noexcept
