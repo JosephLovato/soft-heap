@@ -80,7 +80,7 @@ class Node {
   }
 
   constexpr void Sift_Insert() noexcept {
-    while (std::ssize(elements) < 1 and not IsLeaf()) {
+    while (std::ssize(elements) == 0 and not IsLeaf()) {
       auto& min_child =
           (left == nullptr or (right != nullptr and *left > *right)) ? right
                                                                      : left;
