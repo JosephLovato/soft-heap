@@ -49,7 +49,7 @@ class Node {
         right(std::move(node2)),
         ckey_present(true) {
     // TODO remove sift call
-    Sift();
+    Sift_Insert();
   }
 
   [[nodiscard]] constexpr auto IsLeaf() const noexcept {
@@ -75,6 +75,29 @@ class Node {
       } else {
         min_element.clear();
         min_child->Sift();
+      }
+    }
+  }
+
+  constexpr void Sift_Insert() noexcept {
+    while (std::ssize(elements) < 1 and not IsLeaf()) {
+      auto& min_child =
+          (left == nullptr or (right != nullptr and *left > *right)) ? right
+                                                                     : left;
+      auto& min_element = min_child->elements;
+      if (elements.empty()) {
+        elements = std::move(min_element);
+      } else {
+        elements.insert(elements.end(),
+                        std::make_move_iterator(min_element.begin()),
+                        std::make_move_iterator(min_element.end()));
+      }
+      ckey = min_child->ckey;
+      if (min_child->IsLeaf()) {
+        min_child.reset();  // deallocate child
+      } else {
+        min_element.clear();
+        min_child->Sift_Insert();
       }
     }
   }
@@ -167,6 +190,11 @@ class Node {
     out << "\nand children: " << left << ", " << right << std::endl;
     return out;
   }
+
+     constexpr auto num_corrupted_keys() noexcept {
+       return std::count_if(elements.begin(), elements.end(),
+                            [&](auto&& x) { return x < ckey; });
+     }
 
   List elements;
   Element ckey;

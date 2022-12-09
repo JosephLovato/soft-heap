@@ -27,8 +27,12 @@ namespace detail {
 TEST(SoftHeap, Construct) { SoftHeap<int> soft_heap{0}; }
 
 TEST(SoftHeap, STLConstruct) {
-  auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+//  auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  auto rand = detail::generate_rand(1000000);
+  std::sort(rand.begin(), rand.end());
   auto soft_heap = SoftHeap<int, std::vector<int>, 2>{rand.begin(), rand.end()};
+  int corrupted = soft_heap.num_corrupted_keys();
+  std::cout << "Num corrupted: " << corrupted;
   auto fout = std::ofstream("soft_heap.txt");
   fout << soft_heap;
 }

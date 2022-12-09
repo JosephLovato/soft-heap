@@ -130,6 +130,14 @@ class SoftHeap {
     return out;
   }
 
+     [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
+       int num = 0;
+       for (auto& tree: trees) {
+         num += tree.num_corrupted_keys();
+       }
+       return num;
+     }
+
   TreeList trees;
 
  private:
