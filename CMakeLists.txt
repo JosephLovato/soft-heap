@@ -34,8 +34,11 @@ target_compile_features(soft_heap_perf PRIVATE cxx_std_20)
 target_compile_options(soft_heap_perf PRIVATE -Wall)
 
 # Unit Testing Executable
-add_executable(soft_heap_test main.cpp test/node_tests.cpp test/tree_tests.cpp
-                              test/soft_heap_tests.cpp)
+add_executable(
+  soft_heap_test
+  main.cpp test/node_tests.cpp test/tree_tests.cpp test/soft_heap_tests.cpp
+  test/flat_tree_tests.cpp src/flat_node.hpp)
+
 target_link_libraries(soft_heap_test PRIVATE gtest_main gmock gtest)
 target_include_directories(soft_heap_test PRIVATE "include" "src")
 set_property(

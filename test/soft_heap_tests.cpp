@@ -7,20 +7,10 @@
 #include <random>
 #include <vector>
 
+#include "common.hpp"
 #include "soft_heap.hpp"
 
 namespace soft_heap::test {
-
-namespace detail {
-
-[[nodiscard]] auto generate_rand(int n) noexcept {
-  auto v = std::vector<int>(n);
-  std::iota(v.begin(), v.end(), 1);  // 1,2,...,size-1
-  std::shuffle(v.begin(), v.end(), std::mt19937(std::random_device()()));
-  return v;
-}
-
-}  // namespace detail
 
 // NOLINTBEGIN(modernize-use-trailing-return-type)
 
@@ -39,7 +29,7 @@ TEST(SoftHeap, Extract) {
   auto soft_heap =
       SoftHeap<int, std::vector<int>, 10>{std::make_move_iterator(rand.begin()),
                                           std::make_move_iterator(rand.end())};
-  auto fout = std::ofstream("soft_heap.txt");
+  auto fout = std::ofstream("soft_heap_extract.txt");
   for ([[maybe_unused]] auto&& x : rand) {
     fout << soft_heap.ExtractMin() << ',';
   }
@@ -53,7 +43,7 @@ TEST(SoftHeap, ExtractMin) {
       SoftHeap<int, std::vector<int>, 1000>(rand.begin(), rand.end());
   auto stl_heap =
       std::priority_queue(rand.begin(), rand.end(), std::greater<>());
-  auto fout = std::ofstream("soft_heap_extract.txt");
+  auto fout = std::ofstream("soft_heap_extract_min.txt");
 
   while (not stl_heap.empty()) {
     const auto sh_elem = soft_heap.ExtractMin();
