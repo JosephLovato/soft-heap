@@ -64,11 +64,13 @@ TEST(FlatSoftHeap, Extract) {
   auto soft_heap = FlatSoftHeap<int, std::vector<int>, 1>{
       std::make_move_iterator(rand.begin()),
       std::make_move_iterator(rand.end())};
+  EXPECT_EQ(2000, soft_heap.size());
   auto fout = std::ofstream("./flat_soft_heap_extract_min2.txt");
   for ([[maybe_unused]] auto&& x : rand) {
     std::cerr << soft_heap.ExtractMin() << std::endl;
   }
   fout << std::endl;
+  EXPECT_EQ(0, soft_heap.size());
 }
 
 // TEST(FlatSoftHeap, ExtractUniqueness) {
@@ -108,7 +110,7 @@ TEST(FlatSoftHeap, ExtractMinVerifyAllElements) {
   auto rand = detail::generate_rand(3000);
   auto soft_heap = FlatSoftHeap<int, std::vector<int>, inverse_eps>(
       rand.begin(), rand.end());
-
+  EXPECT_EQ(3000, soft_heap.size());
   // auto fout = std::ofstream("soft_heap_extract_verify_all_elements.txt");
 
   std::set<int> extracted_elems;
@@ -119,6 +121,7 @@ TEST(FlatSoftHeap, ExtractMinVerifyAllElements) {
       FAIL();
     }
   }
+  EXPECT_EQ(0, soft_heap.size());
 }
 
 // TEST(FlatNode, IsLeaf) {

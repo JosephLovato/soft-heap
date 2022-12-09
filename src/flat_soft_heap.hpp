@@ -25,7 +25,7 @@ class FlatSoftHeap {
   using TreeListIt = typename TreeList::iterator;
 
   constexpr explicit FlatSoftHeap(Element&& element) noexcept
-      : epsilon(1.0 / inverse_epsilon) {
+      : epsilon(1.0 / inverse_epsilon), c_size(1) {
     trees.emplace_back(std::forward<Element>(element));
     trees.begin()->min_ckey = trees.begin();
   }
@@ -39,6 +39,7 @@ class FlatSoftHeap {
 
   constexpr void Insert(Element&& e) noexcept {
     Meld(FlatSoftHeap(std::forward<Element>(e)));
+    ++c_size;
   }
 
   constexpr void Meld(FlatSoftHeap&& P) noexcept {
@@ -105,6 +106,7 @@ class FlatSoftHeap {
         }
       }
     }
+    --c_size;
     return first_elem;
   }
 
@@ -136,7 +138,12 @@ class FlatSoftHeap {
     }
   }
 
+  [[nodiscard]] auto size() const noexcept { return c_size; }
+
   const double epsilon;
+
+ private:
+  size_t c_size{};
 };
 
 }  // namespace soft_heap
