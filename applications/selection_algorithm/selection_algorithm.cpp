@@ -114,7 +114,7 @@ auto selection_algorithm::soft_heap_selection(
 
       if ((elem.second * 2 + 1) < std::ssize(input_heap)) {
         k_elements.push_back(input_heap.at(elem.second * 2 + 1));
-        soft_heap.Insert(std::make_pair(input_heap.at(elem.second * 2 + 1), elem.second));
+        soft_heap.Insert(std::make_pair(input_heap.at(elem.second * 2 + 1), elem.second * 2 + 1));
         // soft_heap.Insert(std::make_pair(input_heap.at(min_elem_index * 2 +
         // 1),min_elem_index * 2 + 1));
       }
@@ -129,5 +129,5 @@ auto selection_algorithm::soft_heap_selection(
   }
   std::nth_element(k_elements.begin(), k_elements.begin() + k,
                    k_elements.end());
-  return {k_elements.begin(), k_elements.begin() + 5};
+  return {k_elements.begin(), k_elements.begin() + k};
 };

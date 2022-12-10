@@ -17,8 +17,8 @@ namespace soft_heap::test {
 TEST(SoftHeap, Construct) { SoftHeap<int> soft_heap{0}; }
 
 TEST(SoftHeap, STLConstruct) {
-//  auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  auto rand = detail::generate_rand(1000);
+ auto rand = std::vector{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  // auto rand = detail::generate_rand(1000);
   std::sort(rand.begin(), rand.end());
   auto soft_heap = SoftHeap<int, std::vector<int>, 2>{rand.begin(), rand.end()};
   EXPECT_EQ(10, soft_heap.size());

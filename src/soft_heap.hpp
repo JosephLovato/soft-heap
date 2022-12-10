@@ -171,13 +171,6 @@ class SoftHeap {
 
   [[nodiscard]] auto size() const noexcept { return c_size; }
 
-  [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
-    int num = 0;
-    for(auto &tree : trees) {
-      num += tree.num_corrupted_keys();
-    }
-    return num;
-  }
 
   double epsilon;
 
