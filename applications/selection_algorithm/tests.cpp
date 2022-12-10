@@ -67,12 +67,14 @@ TEST(Selection, Standard_Heap) {
 // }
 
 TEST(Selection, Soft_Heap) {
-  const size_t k = 200;
+  const size_t k = 5;
   auto input_heap = bench::generate_rand(1000);
   std::make_heap(input_heap.begin(), input_heap.end(), std::greater<>{});
   std::priority_queue<int, std::vector<int>, std::greater<>> min_heap(input_heap.begin(), input_heap.end());
 
-  auto k_elements = selection_algorithm::soft_heap_selection(min_heap, k);
+  auto k_elements = selection_algorithm::soft_heap_selection(input_heap, k);
+
+  std::sort(k_elements.begin(), k_elements.end());
 
   ASSERT_EQ(k_elements.size(), k);
 

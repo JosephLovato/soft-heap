@@ -103,7 +103,7 @@ class Node {
   }
 
   // TODO return list of corrupted elements
-  constexpr void SiftC(std::vector<int>& corrupted_elems) noexcept {
+  constexpr void SiftC(std::vector<Element>& corrupted_elems) noexcept {
     while (std::ssize(elements) < size and not IsLeaf()) {
       auto& min_child =
           (left == nullptr or (right != nullptr and *left > *right)) ? right

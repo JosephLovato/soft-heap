@@ -45,7 +45,7 @@ class SoftHeap {
   }
 
   constexpr void Meld(SoftHeap&& P) noexcept {
-    if (P.rank() > rank()) {
+    if (trees.begin() != trees.end() && P.rank() > rank()) {
       trees.swap(P.trees);
     }
     const auto p_rank = P.rank();
@@ -86,7 +86,6 @@ class SoftHeap {
         }
       }
     }
-    // TODO return list of corrupted elements and element
     return first_elem;
   }
 
@@ -101,7 +100,7 @@ class SoftHeap {
       x->ckey_present = false;
       // Soft Select algo specifies adding min element to list of corrupted
       // elements if element is not corrupted
-      corrupted_elements.push_back(std::make_pair(first_elem));
+      corrupted_elements.push_back(first_elem);
     }
     if (2 * std::ssize(x->elements) < x->size) {
       if (not x->IsLeaf()) {
