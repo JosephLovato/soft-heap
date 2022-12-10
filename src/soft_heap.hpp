@@ -9,6 +9,8 @@
 #include <memory>
 #include <set>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "policies.hpp"
 #include "tree.hpp"
@@ -46,7 +48,7 @@ class SoftHeap {
   }
 
   constexpr void Meld(SoftHeap&& P) noexcept {
-    if (P.rank() > rank()) {
+    if (trees.begin() != trees.end() && P.rank() > rank()) {
       trees.swap(P.trees);
     }
     const auto p_rank = P.rank();
@@ -91,6 +93,36 @@ class SoftHeap {
     return first_elem;
   }
 
+  [[nodiscard]] auto ExtractMinC() noexcept
+      -> std::pair<Element, std::vector<Element>> {
+    const auto& min_tree = trees.front().min_ckey;
+    const auto& x = min_tree->root;
+    const auto first_elem = x->back();
+    std::vector<Element> corrupted_elements;
+    x->pop_back();
+    if (first_elem == x->ckey) {
+      x->ckey_present = false;
+      // Soft Select algo specifies adding min element to list of corrupted
+      // elements if element is not corrupted
+      corrupted_elements.push_back(first_elem);
+    }
+    if (2 * std::ssize(x->elements) < x->size) {
+      if (not x->IsLeaf()) {
+        x->SiftC(corrupted_elements);
+        UpdateSuffixMin(min_tree);
+      } else if (x->elements.empty()) {
+        if (min_tree != trees.begin()) {
+          const auto prev = std::prev(min_tree);
+          trees.erase(min_tree);
+          UpdateSuffixMin(prev);
+        } else {
+          trees.erase(min_tree);
+        }
+      }
+    }
+    return std::make_pair(first_elem, corrupted_elements);
+  }
+
   friend auto operator<<(std::ostream& out, SoftHeap& soft_heap) noexcept
       -> std::ostream& {
     out << "SoftHeap: " << soft_heap.rank() << "(rank) with trees: \n";
@@ -100,6 +132,14 @@ class SoftHeap {
     out << std::endl;
     return out;
   }
+
+     [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
+       int num = 0;
+       for (auto& tree: trees) {
+         num += tree.num_corrupted_keys();
+       }
+       return num;
+     }
 
   TreeList trees;
 
@@ -131,13 +171,6 @@ class SoftHeap {
 
   [[nodiscard]] auto size() const noexcept { return c_size; }
 
-  [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
-    int num = 0;
-    for(auto &tree : trees) {
-      num += tree.num_corrupted_keys();
-    }
-    return num;
-  }
 
   double epsilon;
 
