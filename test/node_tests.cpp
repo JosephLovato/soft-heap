@@ -74,8 +74,8 @@ TEST(Node, Combine) {
   auto node = std::make_unique<Node<int, std::vector<int>, 8>>(
       std::move(y),
       std::move(x));  // combine-constructor
-  EXPECT_NODE_EQ(node, Node<int, std::vector<int>, 8>{10, 2, {2, 4}});
-  EXPECT_TRUE(node->IsLeaf());
+  EXPECT_NODE_EQ(node, Node<int, std::vector<int>, 8>{10, 2, {2}});
+  EXPECT_NODE_EQ(node->left, Node<int, std::vector<int>, 8>{9, 1, {4}});
   EXPECT_EQ(x, nullptr);
   EXPECT_EQ(y, nullptr);
 }
@@ -94,9 +94,11 @@ TEST(Node, RecursiveCombine) {
 
   auto node = std::make_unique<Node<int, std::vector<int>, 8>>(std::move(x),
                                                                std::move(y));
-  EXPECT_NODE_EQ(node, Node<int, std::vector<int>, 8>{11, 3, {1, 3, 2, 4}});
+  EXPECT_NODE_EQ(node, Node<int, std::vector<int>, 8>{11, 3, {1, 3}});
+
   EXPECT_NODE_EQ(node->right, Node<int, std::vector<int>, 8>{9, 1, {5}});
-  EXPECT_EQ(node->left, nullptr);
+  EXPECT_NODE_EQ(node->left, Node<int, std::vector<int>, 8>{10, 2, {2}});
+  EXPECT_NODE_EQ(node->left->right, Node<int, std::vector<int>, 8>{9, 1, {4}});
   EXPECT_EQ(y, nullptr);
 }
 

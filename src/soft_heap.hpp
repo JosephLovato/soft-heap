@@ -1,7 +1,5 @@
 #pragma once
 
-#include <__iterator/size.h>
-
 #include <algorithm>
 #include <cmath>
 #include <functional>
