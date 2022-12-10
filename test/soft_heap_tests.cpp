@@ -97,8 +97,8 @@ TEST(SoftHeap, TreeListSizesOverTime) {
     file << soft_heap.size() << "," << soft_heap.trees.size() << "::";
     for (const auto& t : soft_heap.trees) {
       file << t.rank() << ",";
-      file << std::endl;
     }
+    file << std::endl;
   }
 }
 

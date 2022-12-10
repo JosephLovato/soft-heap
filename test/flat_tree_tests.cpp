@@ -67,7 +67,7 @@ TEST(FlatSoftHeap, Extract) {
   EXPECT_EQ(2000, soft_heap.size());
   auto fout = std::ofstream("./flat_soft_heap_extract_min2.txt");
   for ([[maybe_unused]] auto&& x : rand) {
-    std::cerr << soft_heap.ExtractMin() << std::endl;
+   /* std::cerr << */ soft_heap.ExtractMin(); //<< std::endl;
   }
   fout << std::endl;
   EXPECT_EQ(0, soft_heap.size());

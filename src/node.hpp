@@ -116,6 +116,11 @@ class Node {
     return out;
   }
 
+  constexpr auto num_corrupted_keys() noexcept {
+    return std::count_if(elements.begin(), elements.end(),
+                         [&](auto&& x) { return x < ckey; });
+  }
+
   List elements;
   Element ckey;
   const int rank;

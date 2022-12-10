@@ -36,7 +36,7 @@ target_compile_options(soft_heap_perf PRIVATE -Wall)
 # Unit Testing Executable
 add_executable(
   soft_heap_test
-  main.cpp test/node_tests.cpp test/tree_tests.cpp test/soft_heap_tests.cpp
+  main.cpp test/node_tests.cpp test/tree_tests.cpp test/soft_heap_tests.cpp test/statistics.cpp
   test/flat_tree_tests.cpp src/flat_node.hpp)
 
 target_link_libraries(soft_heap_test PRIVATE gtest_main gmock gtest)
@@ -53,7 +53,7 @@ target_compile_options(soft_heap_test PRIVATE -g -Wall -Wextra)
 # Benchmark Executable
 add_executable(soft_heap_bench benchmark.cpp)
 target_link_libraries(soft_heap_bench PRIVATE benchmark::benchmark
-                                              benchmark::benchmark_main)
+  benchmark::benchmark_main)
 target_include_directories(soft_heap_bench PRIVATE "include" "src")
 set_property(
   TARGET soft_heap_bench
