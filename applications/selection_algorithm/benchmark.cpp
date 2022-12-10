@@ -128,6 +128,20 @@ static void soft_heap_selection_constant_k(benchmark::State& state) {
   state.SetComplexityN(state.range(1));
 }
 
+static void flat_soft_heap_selection_constant_k(benchmark::State& state) {
+  for (auto _ : state) {
+    state.PauseTiming();
+    auto rand = bench::generate_rand(state.range(0));
+    auto min_heap = std::vector<int>(rand.begin(), rand.end());
+    std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
+    state.ResumeTiming();
+    benchmark::DoNotOptimize(selection_algorithm::flat_soft_heap_selection(
+        min_heap, state.range(1)));
+    benchmark::ClobberMemory();
+  }
+  state.SetComplexityN(state.range(1));
+}
+
 static void Args(benchmark::internal::Benchmark* b) {
   b->Unit(benchmark::kNanosecond)
       ->ArgsProduct(
@@ -164,5 +178,9 @@ BENCHMARK(standard_heap_constant_k)
 
 // BENCHMARK(soft_heap_selection)->Apply(Args)->Complexity(benchmark::oN);
 BENCHMARK(soft_heap_selection_constant_k)
+    ->Apply(Args_Const_k)
+    ->Complexity(benchmark::oN);
+
+BENCHMARK(flat_soft_heap_selection_constant_k)
     ->Apply(Args_Const_k)
     ->Complexity(benchmark::oN);
