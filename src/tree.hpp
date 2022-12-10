@@ -64,19 +64,19 @@ class Tree {
     return out;
   }
 
-     constexpr auto num_corrupted_keys() noexcept {
-       int num = 0;
-       const std::function<void(NodePtr&)> preorder = [&](auto& n) {
-         if (n == nullptr) {
-           return;
-         }
-         num += n->num_corrupted_keys();
-         preorder(n->left);
-         preorder(n->right);
-       };
-       preorder(root);
-       return num;
-     }
+  constexpr auto num_corrupted_keys() noexcept {
+    int num = 0;
+    const std::function<void(NodePtr&)> preorder = [&](auto& n) {
+      if (n == nullptr) {
+        return;
+      }
+      num += n->num_corrupted_keys();
+      preorder(n->left);
+      preorder(n->right);
+    };
+    preorder(root);
+    return num;
+  }
 
   // std::vector<Node<int, List>> node_heap;
   NodePtr root;
@@ -163,20 +163,6 @@ class Tree {
 //     preorder(tree.root);
 //     out << std::endl;
 //     return out;
-//   }
-
-//   constexpr auto num_corrupted_keys() noexcept {
-//     int num = 0;
-//     const std::function<void(NodePtr&)> preorder = [&](auto& n) {
-//       if (n == nullptr) {
-//         return;
-//       }
-//       num += n->num_corrupted_keys();
-//       preorder(n->left);
-//       preorder(n->right);
-//     };
-//     preorder(root);
-//     return num;
 //   }
 
 //   NodePtr root;            // root of node-based tree

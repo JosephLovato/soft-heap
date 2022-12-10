@@ -1,6 +1,6 @@
 # Disable justifications:
 # -readability-identifier-length : Math symbols
-# -readability-magic-numbers: Math coeffs
+# -readability-magic-numbers: Math coefficients
 # -bugprone-easily-swappable-parameters: Temporary filter until large refactor
 # -misc-non-private-member-variables-in-classes: Waiting on refactor
 # -bugprone-narrowing-conversions: too many false positives around
@@ -21,4 +21,4 @@ Checks:
     -bugprone-easily-swappable-parameters,
     -misc-non-private-member-variables-in-classes,
     -bugprone-narrowing-conversions,
-    -readability-function-cognitive-complexity,
+    -readability-function-cognitive-complexity
