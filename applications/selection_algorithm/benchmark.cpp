@@ -138,8 +138,8 @@ static void Args(benchmark::internal::Benchmark* b) {
 
 static void Args_Const_k(benchmark::internal::Benchmark* b) {
   b->Unit(benchmark::kNanosecond)
-      ->ArgsProduct({{10000, 100000, 1000000, 10000000, 20000000},
-                     {100, 500, 1000, 5000}})
+      ->ArgsProduct({{100000, 1000000, 10000000, 20000000},
+                     {100, 500, 1000, 5000, 10000}})
       ->Threads(8);
 }
 
