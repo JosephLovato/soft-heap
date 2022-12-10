@@ -35,7 +35,7 @@ static void Nth_Element(benchmark::State& state) {
   for (auto _ : state) {
     state.PauseTiming();
     auto rand = bench::generate_rand(state.range(0));
-    auto k = rand.begin() + rand.size() / 2;
+    auto k = rand.begin() + rand.size() / state.range(1);
     state.ResumeTiming();
     std::nth_element(rand.begin(), k, rand.end());
     benchmark::ClobberMemory();
@@ -49,7 +49,7 @@ static void standard_heap(benchmark::State& state) {
     auto rand = bench::generate_rand(state.range(0));
     auto min_heap = std::vector<int>(rand.begin(), rand.end());
     std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
-    auto k = rand.size() / 2;
+    auto k = rand.size() / state.range(1);
     state.ResumeTiming();
     benchmark::DoNotOptimize(
         selection_algorithm::standard_heap_selection(min_heap, k));
@@ -92,7 +92,7 @@ static void soft_heap_selection(benchmark::State& state) {
     auto rand = bench::generate_rand(state.range(0));
     auto min_heap = std::vector<int>(rand.begin(), rand.end());
     std::make_heap(min_heap.begin(), min_heap.end(), std::greater<>{});
-    auto k = rand.size() / 2;
+    auto k = rand.size() / state.range(1);
     state.ResumeTiming();
     benchmark::DoNotOptimize(
         selection_algorithm::soft_heap_selection(min_heap, k));
@@ -102,11 +102,13 @@ static void soft_heap_selection(benchmark::State& state) {
 }
 
 BENCHMARK(Nth_Element)
-    ->ArgsProduct({{10, 100, 1000, 10000}})
+    ->ArgsProduct({{10, 100, 1000, 10000, 100000, 1000000, 10000000, 20000000}, {2, 4, 6, 8}})
+    ->Threads(8)
     ->Complexity(benchmark::oN);
 
 BENCHMARK(standard_heap)
-    ->ArgsProduct({{10, 100, 1000, 10000}})
+    ->ArgsProduct({{10, 100, 1000, 10000, 100000, 1000000, 10000000, 20000000}, {2, 4, 6, 8}})
+    ->Threads(8)
     ->Complexity(benchmark::oNLogN);
 
 // BENCHMARK(standard_heap_vector)
@@ -118,5 +120,6 @@ BENCHMARK(standard_heap)
 //     ->Complexity(benchmark::oNLogN);
 
 BENCHMARK(soft_heap_selection)
-    ->ArgsProduct({{10, 100, 1000, 10000}})
+    ->ArgsProduct({{10, 100, 1000, 10000, 100000, 1000000, 10000000, 20000000}, {2, 4, 6, 8}})
+    ->Threads(8)
     ->Complexity(benchmark::oN);
