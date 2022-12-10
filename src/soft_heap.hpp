@@ -1,5 +1,7 @@
 #pragma once
 
+#include <__iterator/size.h>
+
 #include <algorithm>
 #include <cmath>
 #include <functional>
@@ -43,12 +45,37 @@ class SoftHeap {
   }
 
   constexpr void Insert(Element e) noexcept {
-    Meld(SoftHeap(std::forward<Element>(e)));
+    // auto node = Node(e);
     ++c_size;
+    auto first_tree = trees.begin();
+    if (std::ssize(trees) != 0 and first_tree->rank() == 0) {
+      first_tree->root = MakeNodePtr(
+          std::move(first_tree->root),
+          std::make_unique<Node<Element, List, inverse_epsilon>>(std::move(e)));
+      // compare new node to first tree's root
+      // tree->root = MakeNodePtr(std::move(tree->root), std::move(node));
+      for (auto tree = trees.begin(); tree != trees.end();
+           std::advance(tree, 1)) {
+        if (std::next(tree) != trees.end() and
+            tree->rank() == std::next(tree)->rank()) {
+          tree->root = MakeNodePtr(std::move(tree->root),
+                                   std::move(std::next(tree)->root));
+          trees.erase(std::next(tree));
+          std::advance(tree, -1);
+        } else if (tree->rank() > 0) {
+          UpdateSuffixMin(tree);
+          return;
+        }
+      }
+    } else {
+      trees.emplace_front(std::forward<Element>(e));
+      trees.begin()->min_ckey = trees.begin();
+    }
+    // Meld(SoftHeap(std::forward<Element>(e)));
   }
 
   constexpr void Meld(SoftHeap&& P) noexcept {
-    if (trees.begin() != trees.end() && P.rank() > rank()) {
+    if (std::ssize(trees) != 0 && P.rank() > rank()) {
       trees.swap(P.trees);
     }
     const auto p_rank = P.rank();
@@ -133,13 +160,13 @@ class SoftHeap {
     return out;
   }
 
-     [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
-       int num = 0;
-       for (auto& tree: trees) {
-         num += tree.num_corrupted_keys();
-       }
-       return num;
-     }
+  [[nodiscard]] constexpr auto num_corrupted_keys() noexcept {
+    int num = 0;
+    for (auto& tree : trees) {
+      num += tree.num_corrupted_keys();
+    }
+    return num;
+  }
 
   TreeList trees;
 
@@ -170,7 +197,6 @@ class SoftHeap {
   }
 
   [[nodiscard]] auto size() const noexcept { return c_size; }
-
 
   double epsilon;
 

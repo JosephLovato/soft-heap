@@ -52,9 +52,17 @@ static void Args(benchmark::internal::Benchmark* b) {
 // BENCHMARK(SoftHeapExtractOne)->Apply(Args);
 // BENCHMARK(STLHeapExtractOne)->Apply(Args);
 
-BENCHMARK(FlatSoftHeapExtract)->Apply(Args);
-BENCHMARK(SoftHeapExtract)->Apply(Args);
-BENCHMARK(STLHeapExtract)->Apply(Args);
+using vector = std::vector<int>;
+BENCHMARK(FlatSoftHeapExtract<vector, 2>)->Apply(Args);
+BENCHMARK(SoftHeapExtract<vector, 2>)->Apply(Args);
+BENCHMARK(FlatSoftHeapExtract<vector, 8>)->Apply(Args);
+BENCHMARK(SoftHeapExtract<vector, 8>)->Apply(Args);
+BENCHMARK(FlatSoftHeapExtract<vector, 1000>)->Apply(Args);
+BENCHMARK(SoftHeapExtract<vector, 1000>)->Apply(Args);
+
+// BENCHMARK(FlatSoftHeapExtract)->Apply(Args);
+// BENCHMARK(SoftHeapExtract)->Apply(Args);
+// BENCHMARK(STLHeapExtract)->Apply(Args);
 
 BENCHMARK_MAIN();
 
