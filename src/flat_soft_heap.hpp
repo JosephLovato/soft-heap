@@ -37,9 +37,52 @@ class FlatSoftHeap {
                   [&](auto&& e) { Insert(std::forward<Element>(e)); });
   }
 
-  constexpr void Insert(Element&& e) noexcept {
-    Meld(FlatSoftHeap(std::forward<Element>(e)));
+  // constexpr void Insert(Element&& e) noexcept {
+  //   Meld(FlatSoftHeap(std::forward<Element>(e)));
+  //   ++c_size;
+  // }
+
+  constexpr void Insert(Element e) noexcept {
+    // auto node = Node(e);
     ++c_size;
+    auto first_tree = trees.begin();
+    if (std::ssize(trees) != 0 and first_tree->rank() == 0) {
+      auto& node_heap = first_tree->node_heap;
+      // auto& next_heap = std::vector{e};
+      node_heap.emplace_back(std::move(e));
+      auto& new_root =
+          node_heap[0] > node_heap[1] ? node_heap[1] : node_heap[0];
+      new_root.size = 1;
+      ++new_root.rank;
+      for (auto tree = trees.begin(); tree != trees.end();
+           std::advance(tree, 1)) {
+        auto&& next_tree = std::next(tree);
+        if (next_tree != trees.end() and tree->rank() == next_tree->rank()) {
+          auto& node_heap = tree->node_heap;
+          auto& next_heap = next_tree->node_heap;
+          node_heap.insert(node_heap.end(),
+                           std::make_move_iterator(next_heap.begin()),
+                           std::make_move_iterator(next_heap.end()));
+          auto& new_root =
+              node_heap[0] > next_heap[0] ? next_heap[0] : node_heap[0];
+          new_root.size =
+              (tree->rank() > ConstCeil(std::log2(inverse_epsilon)) + 5)
+                  ? new_root.size + 1
+                  : 1;
+          ++new_root.rank;
+          tree->SiftInsert();
+          trees.erase(next_tree);
+          std::advance(tree, -1);
+        } else if (tree->rank() > 0) {
+          UpdateSuffixMin(tree);
+          return;
+        }
+      }
+    } else {
+      trees.emplace_front(std::forward<Element>(e));
+      trees.begin()->min_ckey = trees.begin();
+    }
+    // Meld(SoftHeap(std::forward<Element>(e)));
   }
 
   constexpr void Meld(FlatSoftHeap&& P) noexcept {
@@ -108,6 +151,49 @@ class FlatSoftHeap {
     }
     --c_size;
     return first_elem;
+  }
+
+  [[nodiscard]] auto ExtractMinC() noexcept
+      -> std::pair<Element, std::vector<Element>> {
+    const auto& min_tree = trees.front().min_ckey;
+    auto& x = min_tree->node_heap[0];
+    Element first_elem = x.back();
+    std::vector<Element> corrupted_elements;
+    x.pop_back();
+    if (first_elem == x.ckey) {
+      x.ckey_present = false;
+      corrupted_elements.push_back(first_elem);
+    }
+    if (2 * std::ssize(x.elements) < x.size) {
+      if (std::ssize(min_tree->node_heap) > 1) {  // Check if leaf
+        auto& min_node_heap = min_tree->node_heap;
+        const auto min_child_idx = std::ssize(min_node_heap) > 2 and
+                                           min_node_heap[1] > min_node_heap[2]
+                                       ? 2
+                                       : 1;
+        auto& min_elements = min_node_heap[min_child_idx].elements;
+        min_elements.insert(min_elements.end(),
+                            std::make_move_iterator(x.elements.begin()),
+                            std::make_move_iterator(x.elements.end()));
+        if (x.ckey_present) {
+          corrupted_elements.push_back(x.ckey);
+        }
+        std::pop_heap(min_node_heap.begin(), min_node_heap.end(),
+                      std::greater<>());
+        min_node_heap.pop_back();
+        UpdateSuffixMin(min_tree);
+      } else if (x.elements.empty()) {
+        if (min_tree != trees.begin()) {
+          const auto prev = std::prev(min_tree);
+          trees.erase(min_tree);
+          UpdateSuffixMin(prev);
+        } else {
+          trees.erase(min_tree);
+        }
+      }
+    }
+    --c_size;
+    return std::make_pair(first_elem, corrupted_elements);
   }
 
   friend auto operator<<(std::ostream& out, FlatSoftHeap& soft_heap) noexcept

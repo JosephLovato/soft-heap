@@ -2,6 +2,7 @@
 #include <concepts>
 #include <queue>
 
+#include "flat_soft_heap.hpp"
 #include "soft_heap.hpp"
 
 namespace selection_algorithm {
@@ -22,6 +23,8 @@ auto soft_heap_selection(std::input_iterator auto first,
 
 auto soft_heap_selection(const std::vector<int>& input_heap, size_t k) noexcept
     -> std::vector<int>;
-;
+
+auto flat_soft_heap_selection(const std::vector<int>& input_heap,
+                              size_t k) noexcept -> std::vector<int>;
 
 }  // namespace selection_algorithm

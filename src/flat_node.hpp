@@ -21,20 +21,23 @@ class FlatNode {
       : elements(List{std::forward<Element>(element)}),
         ckey(std::forward<Element>(element)),
         rank(0),
-        size(1) {}
+        size(1),
+        ckey_present(true) {}
 
   constexpr explicit FlatNode(int rank, int size, List&& list) noexcept
       : elements(std::move(list)),
         ckey(*std::max_element(elements.begin(), elements.end())),
         rank(rank),
-        size(size) {}
+        size(size),
+        ckey_present(true) {}
 
   constexpr explicit FlatNode(const FlatNode& node1,
                               const FlatNode& node2) noexcept
       : rank(std::max(node2.rank, node1.rank) + 1),
         size((rank > ConstCeil(std::log2(inverse_epsilon)) + 5)
                  ? std::max(node2.rank, node1.rank) + 1
-                 : 1) {
+                 : 1),
+        ckey_present(true) {
     // Sift();
   }
 
@@ -68,6 +71,7 @@ class FlatNode {
   Element ckey;
   int rank;
   int size;
+  bool ckey_present;
 };
 
 }  // namespace soft_heap
