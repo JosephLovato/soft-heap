@@ -157,11 +157,9 @@ class FlatTree {
       out << "\nand children: " << left << ", " << right << '\n' << std::endl;
       if (std::ssize(tree.node_heap) > 2 * n + 1) {
         self(self, 2 * n + 1);
-        // preorder(2 * n + 1, preorder);
       }
       if (std::ssize(tree.node_heap) > 2 * n + 2) {
         self(self, 2 * n + 2);
-        // preorder(2 * n + 2, preorder);
       }
     };
     preorder(preorder, 0);
@@ -174,103 +172,3 @@ class FlatTree {
 };
 
 }  // namespace soft_heap
-
-// #pragma once
-// #include <algorithm>
-// #include <cmath>
-// #include <functional>
-// #include <iomanip>
-// #include <memory>
-// #include <vector>
-
-// #include "node.hpp"
-// #include "policies.hpp"
-
-// // OUTLINE
-// // template <template <class... T> class List, std::totally_ordered
-// Element>
-// // class FlatTree {
-// //  private:
-// //   using NodePtr = std::unique_ptr<Node<List, Element>>;
-// //   using FlatTreePtr = std::shared_ptr<FlatTree>;
-// //   using WeakFlatTreePtr = std::weak_ptr<FlatTree>;
-
-// //  public:
-// //   constexpr explicit FlatTree(Element&&) noexcept;
-// //   constexpr auto rank() const noexcept;
-
-// //   NodePtr root;
-// //   FlatTreePtr next;
-// //   FlatTreePtr prev;
-// //   WeakFlatTreePtr suffix_min;
-// // };
-
-// namespace soft_heap {
-// template <template <class... T> class List, policy::TotalOrdered Element>
-// class FlatTree {
-//  private:
-//   using NodePtr = std::unique_ptr<Node<List, Element>>;
-//   using FlatTreePtr = std::shared_ptr<FlatTree>;
-//   using WeakFlatTreePtr = std::weak_ptr<FlatTree>;
-
-//   constexpr auto MakeNodePtr(Element&& element) noexcept {
-//     return std::make_unique<Node<List, Element>>(
-//         std::forward<Element>(element));
-//   }
-
-//  public:
-//   FlatTree() = delete;
-//   constexpr explicit FlatTree(Element&& element) noexcept
-//       : root(MakeNodePtr(std::forward<Element>(element))),
-//         next(nullptr),
-//         prev(nullptr),
-//         suffix_min() {}
-
-//   [[nodiscard]] constexpr auto rank() const noexcept -> int {
-//     return root->rank;
-//   }
-
-//   friend auto operator<<(std::ostream& out, FlatTree& tree) noexcept
-//       -> std::ostream& {
-//     const auto suff = (tree.suffix_min.expired())
-//                           ? "nullptr"
-//                           :
-//                           std::to_string(FlatTreePtr(tree.suffix_min)->rank());
-
-//     out << "FlatTree: " << tree.rank() << "(rank)"
-//         << "\nsuffix_min: " << suff << "\nwith Nodes:\n";
-
-//     const std::function<void(NodePtr&)> preorder = [&](auto& n) {
-//       if (n == nullptr) {
-//         return;
-//       }
-//       out << *n << '\n';
-//       preorder(n->left);
-//       preorder(n->right);
-//     };
-//     preorder(tree.root);
-//     out << std::endl;
-//     return out;
-//   }
-
-//   constexpr auto num_corrupted_keys() noexcept {
-//     int num = 0;
-//     const std::function<void(NodePtr&)> preorder = [&](auto& n) {
-//       if (n == nullptr) {
-//         return;
-//       }
-//       num += n->num_corrupted_keys();
-//       preorder(n->left);
-//       preorder(n->right);
-//     };
-//     preorder(root);
-//     return num;
-//   }
-
-//   NodePtr root;            // root of node-based tree
-//   FlatTreePtr next;            // right
-//   FlatTreePtr prev;            // left
-//   WeakFlatTreePtr suffix_min;  // tree with minimum ckey to the right
-// };
-
-// }  // namespace soft_heap

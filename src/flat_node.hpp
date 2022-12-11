@@ -37,9 +37,7 @@ class FlatNode {
         size((rank > ConstCeil(std::log2(inverse_epsilon)) + 5)
                  ? std::max(node2.rank, node1.rank) + 1
                  : 1),
-        ckey_present(true) {
-    // Sift();
-  }
+        ckey_present(true) {}
 
   [[nodiscard]] constexpr auto back() const noexcept -> Element {
     return elements.back();
@@ -51,11 +49,6 @@ class FlatNode {
       -> std::strong_ordering {
     return this->ckey <=> that.ckey;
   }
-
-  // constexpr auto operator<=>(FlatNode&& that) const noexcept
-  //     -> std::strong_ordering {
-  //   return this->ckey <=> that.ckey;
-  // }
 
   friend auto operator<<(std::ostream& out, FlatNode node) noexcept
       -> std::ostream& {

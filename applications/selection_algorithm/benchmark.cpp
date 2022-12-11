@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -14,6 +15,16 @@
 using namespace selection_algorithm;
 
 namespace bench {
+
+// using soft_heap::SoftHeap;
+// constexpr static std::array<int, 4> arr{1, 2, 3, 4};
+// auto soft_heap_factory(const int x) {
+//   return SoftHeap<int, std::vector<int>, [x]>();
+//   // }arr
+//   // if (x == 3) {
+//   //   return SoftHeap<int, std::vector<int>, 3>();
+//   // }
+// }
 
 [[nodiscard]] auto generate_rand(int n) noexcept {
   auto v = std::vector<int>(n);
